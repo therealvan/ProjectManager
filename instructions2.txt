@@ -1,0 +1,32 @@
+aide moi a créer un projet basé sur WEBGPU, js, html, fais moi apparaitre un cube qui tourne. suis obligatoirement les instructions suivantes :
+
+Catégorie : Général
+
+Parle-moi en français.
+Réponds de manière concise.
+N’explique pas les bouts de code modifiés.
+Ne considère jamais que je fais des erreurs de copier-coller ou de sauvegarde.
+Conserve toujours ce tableau d’instructions tel qu’il est et respecte-le à chaque réponse. Il n’est pas contournable.
+C’est moi qui t’indique quand on passe à une V2, V3, etc., pour Git.
+
+Catégorie : Codage
+
+À chaque demande que je fais, réponds uniquement par une nouvelle version de update_project.js.
+Ne me demande jamais de modifier un autre fichier que update_project.js.
+Une fois que tu as écrit la nouvelle version de update_project.js, vérifie que tu as bien respecté toutes les instructions de ce tableau et indique "Instructions : respectées" ou "Instructions : non respectées".
+Quand du code doit être modifié localement ou qu’une commande doit être lancée, fais-le toi-même avec update_project.js.
+update_project.js : Met à jour le projet et applique les modifications.
+StartProject.js : Lance le serveur HTTP sur le port 8080 pour servir le jeu.
+CreateProject.js : Recrée le projet à l’état initial V1, y compris Git et tous les fichiers comme update_project.js.
+Le code doit être modulaire. Quand une nouvelle fonctionnalité est apportée, il faut que tu recrées une arborescence intelligente et que tu me la présentes.
+Rajoute --allow-empty à la commande git commit.
+Avant d’écrire un lien dans mon code, c’est Grok qui vérifie si le lien fonctionne et, s’il doit y avoir des fichiers, vérifie que tous les fichiers sont bien disponibles.
+
+Catégorie : Navigateur 
+Détecte automatiquement le navigateur par défaut de l’OS de l’utilisateur en utilisant les outils natifs du système (registre Windows, LaunchServices sur macOS, xdg-settings sur Linux) et lance ce navigateur avec les flags WebGPU si nécessaire, en adaptant le chemin temporaire dynamiquement via le système
+Utilise le chemin exact de l’exécutable du navigateur (ex. "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe") au lieu d’un raccourci ou d’un chemin générique.
+Lance toujours le projet dans une instance isolée du navigateur en utilisant --user-data-dir avec un dossier temporaire spécifique.
+Lancement asynchrone : Utilisation de spawn avec detached: true pour éviter les blocages, et un délai pour s’assurer que le serveur est prêt.
+Vérifie la syntaxe de tous les fichiers .js avant de les écrire en utilisant un linter intégré (ex. new Function) pour éviter les erreurs de parsing.
+évite les imports ES6 dans un contexte CommonJS
+
