@@ -10,19 +10,37 @@ function updateProject() {
     console.log('-------------');
 
     try {
-        // Crée test.txt et écrit "test" dedans
-        fs.writeFileSync('test.txt', 'test');
-        console.log('Fichier test.txt créé avec succès.');
+        // Supprime test.txt localement
+        if (fs.existsSync('test.txt')) {
+            fs.unlinkSync('test.txt');
+            console.log('Fichier test.txt supprimé localement.');
+        } else {
+            console.log('Fichier test.txt non trouvé localement.');
+        }
 
-        // Ajoute, commit et push les modifications
+        // Ajoute la suppression à Git
         execSync('git add .', { stdio: 'inherit' });
-        console.log('Fichiers ajoutés à Git.');
+        console.log('Suppression de test.txt ajoutée à Git.');
 
-        execSync('git commit -m "Ajout de test.txt via UpdateProject.js" --allow-empty', { stdio: 'inherit' });
-        console.log('Commit créé avec succès.');
+        execSync('git commit -m "Suppression de test.txt via UpdateProject.js" --allow-empty', { stdio: 'inherit' });
+        console.log('Commit de suppression créé avec succès.');
 
         execSync('git push origin main', { stdio: 'inherit' });
-        console.log('Modifications poussées vers le dépôt distant.');
+        console.log('Suppression de test.txt poussée vers le dépôt distant.');
+
+        // Crée test2.txt et écrit quelque chose dedans
+        fs.writeFileSync('test2.txt', 'test2');
+        console.log('Fichier test2.txt créé avec succès.');
+
+        // Ajoute, commit et push test2.txt
+        execSync('git add .', { stdio: 'inherit' });
+        console.log('Fichier test2.txt ajouté à Git.');
+
+        execSync('git commit -m "Ajout de test2.txt via UpdateProject.js" --allow-empty', { stdio: 'inherit' });
+        console.log('Commit de test2.txt créé avec succès.');
+
+        execSync('git push origin main', { stdio: 'inherit' });
+        console.log('Fichier test2.txt poussé vers le dépôt distant.');
 
         // Vérifie les fichiers locaux
         github.listLocalFiles();
