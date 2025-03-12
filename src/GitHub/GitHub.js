@@ -6,13 +6,13 @@ function cloneOrUpdateRepo(repoUrl, branch = 'main') {
     try {
         if (!fs.existsSync('.git')) {
             console.log('Clonage du dépôt à la racine...');
-            execSync(`git clone -b ${branch} ${repoUrl} .`, { stdio: 'inherit' });
+            execSync("git clone -b " + branch + " " + repoUrl + " .", { stdio: 'inherit' });
             console.log('Dépôt cloné avec succès à la racine.');
         } else {
             console.log('Mise à jour du dépôt à la racine...');
             execSync('git fetch origin', { stdio: 'inherit' });
-            execSync(`git checkout ${branch}`, { stdio: 'inherit' });
-            execSync(`git pull origin ${branch}`, { stdio: 'inherit' });
+            execSync('git checkout ' + branch, { stdio: 'inherit' });
+            execSync('git pull origin ' + branch, { stdio: 'inherit' });
             console.log('Dépôt mis à jour avec succès à la racine.');
         }
     } catch (error) {
