@@ -7,7 +7,11 @@ const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
 const PROJECT_DIR = path.join(__dirname);
 const SRC_DIR = path.join(PROJECT_DIR, 'src', 'GitHub');
 
-function startProject() {
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function startProject() {
     console.log('Démarrage de StartProject.js...');
     console.log('-------------');
 
@@ -22,26 +26,40 @@ function startProject() {
     }
     console.log('-------------');
 
-    // Étape 2 : Prépare le dossier principal et supprime tout sauf StartProject.js et update_project.js
+    // Étape 2 : Prépare le dossier principal et supprime tout sauf StartProject.js et UpdateProject.js
     try {
         console.log('Vérification et nettoyage du dossier principal :', PROJECT_DIR);
         if (!fs.existsSync(PROJECT_DIR)) {
             fs.mkdirSync(PROJECT_DIR, { recursive: true });
             console.log('Dossier ProjectManager créé.');
         }
-        // Liste tous les fichiers/dossiers dans le répertoire
         const files = fs.readdirSync(PROJECT_DIR);
         for (const file of files) {
-            if (file !== 'StartProject.js' && file !== 'update_project.js') {
+            if (file !== 'StartProject.js' && file !== 'UpdateProject.js') {
                 const filePath = path.join(PROJECT_DIR, file);
-                if (fs.lstatSync(filePath).isDirectory()) {
-                    fs.rmSync(filePath, { recursive: true, force: true });
-                } else {
-                    fs.unlinkSync(filePath);
+                let retries = 3;
+                while (retries > 0) {
+                    try {
+                        if (fs.lstatSync(filePath).isDirectory()) {
+                            fs.rmSync(filePath, { recursive: true, force: true });
+                        } else {
+                            fs.unlinkSync(filePath);
+                        }
+                        break;
+                    } catch (err) {
+                        if (err.code === 'EBUSY') {
+                            console.log(`Fichier ${file} verrouillé, attente 1s...`);
+                            await delay(1000);
+                            retries--;
+                            if (retries === 0) throw err;
+                        } else {
+                            throw err;
+                        }
+                    }
                 }
             }
         }
-        console.log('Étape 2 : Dossier nettoyé, seuls StartProject.js et update_project.js restent.');
+        console.log('Étape 2 : Dossier nettoyé, seuls StartProject.js et UpdateProject.js restent.');
         process.chdir(PROJECT_DIR);
         console.log('Répertoire de travail changé à :', process.cwd());
     } catch (error) {
@@ -55,18 +73,46 @@ function startProject() {
         console.log('Lancement du clonage à la racine...');
         const tempDir = path.join(PROJECT_DIR, 'temp_repo');
         if (fs.existsSync(tempDir)) {
-            fs.rmSync(tempDir, { recursive: true, force: true });
+            let retries = 3;
+            while (retries > 0) {
+                try {
+                    fs.rmSync(tempDir, { recursive: true, force: true });
+                    break;
+                } catch (err) {
+                    if (err.code === 'EBUSY') {
+                        console.log('Dossier temp_repo verrouillé, attente 1s...');
+                        await delay(1000);
+                        retries--;
+                        if (retries === 0) throw err;
+                    } else {
+                        throw err;
+                    }
+                }
+            }
         }
         execSync(`git clone -b main ${REPO_URL} ${tempDir}`, { stdio: 'inherit' });
-        // Déplace les fichiers clonés à la racine, sauf .git
-        fs.readdirSync(tempDir).forEach(file => {
+        const tempFiles = fs.readdirSync(tempDir);
+        for (const file of tempFiles) {
             if (file !== '.git') {
-                fs.renameSync(path.join(tempDir, file), path.join(PROJECT_DIR, file));
+                let retries = 3;
+                while (retries > 0) {
+                    try {
+                        fs.renameSync(path.join(tempDir, file), path.join(PROJECT_DIR, file));
+                        break;
+                    } catch (err) {
+                        if (err.code === 'EBUSY') {
+                            console.log(`Fichier ${file} verrouillé, attente 1s...`);
+                            await delay(1000);
+                            retries--;
+                            if (retries === 0) throw err;
+                        } else {
+                            throw err;
+                        }
+                    }
+                }
             }
-        });
-        // Déplace .git à la racine
+        }
         fs.renameSync(path.join(tempDir, '.git'), path.join(PROJECT_DIR, '.git'));
-        // Supprime le dossier temporaire
         fs.rmSync(tempDir, { recursive: true, force: true });
         console.log('Étape 3 : Dépôt cloné avec succès à la racine sur la branche main.');
     } catch (error) {
@@ -185,7 +231,7 @@ function startProject() {
 // Exécute la fonction principale
 try {
     console.log('Tentative d’exécution de startProject...');
-    startProject();
+    startProject().catch(err => console.error('Erreur globale dans StartProject.js :', err.message));
 } catch (error) {
     console.error('Erreur globale dans StartProject.js :', error.message);
 }
