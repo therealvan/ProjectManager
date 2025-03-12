@@ -1,48 +1,38 @@
 // GitHub.js - Module pour interagir avec GitHub
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
 
-function scanAndPush(message) {
+function cloneOrUpdateRepo(repoUrl, branch = 'main') {
     try {
-        const rootDir = path.resolve(__dirname, '../..'); // Remonte à la racine du projet
-        console.log('Scanning root directory:', rootDir);
-        const allFiles = [];
-        function scanDir(dir) {
-            const items = fs.readdirSync(dir, { withFileTypes: true });
-            for (const item of items) {
-                const fullPath = path.join(dir, item.name);
-                if (item.isDirectory() && item.name !== '.git') {
-                    allFiles.push(fullPath);
-                    scanDir(fullPath);
-                } else if (item.isFile()) {
-                    allFiles.push(fullPath);
-                }
-            }
+        if (!fs.existsSync('.git')) {
+            console.log('Clonage du dépôt à la racine...');
+            execSync(`git clone -b ${branch} ${repoUrl} .`, { stdio: 'inherit' });
+            console.log('Dépôt cloné avec succès à la racine.');
+        } else {
+            console.log('Mise à jour du dépôt à la racine...');
+            execSync('git fetch origin', { stdio: 'inherit' });
+            execSync(`git checkout ${branch}`, { stdio: 'inherit' });
+            execSync(`git pull origin ${branch}`, { stdio: 'inherit' });
+            console.log('Dépôt mis à jour avec succès à la racine.');
         }
-        scanDir(rootDir);
-        console.log('Fichiers et dossiers détectés :', allFiles);
-        execSync('git add .', { stdio: 'inherit' });
-        execSync(`git commit --allow-empty -m "${message}"`, { stdio: 'inherit' });
-        execSync('git push origin main', { stdio: 'inherit' });
-        console.log('Changements poussés avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
-        debug.log("Erreur lors du scan ou du push : " + error.message);
+        debug.log("Erreur lors du clonage ou de la mise à jour du dépôt : " + error.message);
         throw error;
     }
 }
 
-function listRemoteFiles() {
+function listLocalFiles() {
     try {
-        const files = execSync('git ls-tree -r origin/main', { encoding: 'utf8' });
-        console.log('Fichiers sur GitHub :', files);
-        return files;
+        const files = fs.readdirSync('.', { withFileTypes: true });
+        const fileList = files.map(item => item.isDirectory() ? item.name + '/' : item.name);
+        console.log('Fichiers locaux après téléchargement :', fileList);
+        return fileList;
     } catch (error) {
         const debug = require('./DiagGitHub.js');
-        debug.log("Erreur lors de la vérification des fichiers : " + error.message);
+        debug.log("Erreur lors de la liste des fichiers locaux : " + error.message);
         throw error;
     }
 }
 
-module.exports = { scanAndPush, listRemoteFiles };
+module.exports = { cloneOrUpdateRepo, listLocalFiles };
