@@ -6,7 +6,7 @@ function cloneOrUpdateRepo(repoUrl, branch = 'main') {
     try {
         if (!fs.existsSync('.git')) {
             console.log('Clonage du dépôt à la racine...');
-            execSync("git clone -b " + branch + " " + repoUrl + " .", { stdio: 'inherit' });
+            execSync('git clone -b ' + branch + ' ' + repoUrl + ' .', { stdio: 'inherit' });
             console.log('Dépôt cloné avec succès à la racine.');
         } else {
             console.log('Mise à jour du dépôt à la racine...');
@@ -17,7 +17,7 @@ function cloneOrUpdateRepo(repoUrl, branch = 'main') {
         }
     } catch (error) {
         const debug = require('./DiagGitHub.js');
-        debug.log("Erreur lors du clonage ou de la mise à jour du dépôt : " + error.message);
+        debug.log('Erreur lors du clonage ou de la mise à jour du dépôt : ' + error.message);
         throw error;
     }
 }
@@ -30,7 +30,7 @@ function listLocalFiles() {
         return fileList;
     } catch (error) {
         const debug = require('./DiagGitHub.js');
-        debug.log("Erreur lors de la liste des fichiers locaux : " + error.message);
+        debug.log('Erreur lors de la liste des fichiers locaux : ' + error.message);
         throw error;
     }
 }
