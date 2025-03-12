@@ -21,7 +21,7 @@ Avant d’écrire un lien dans mon code, c’est Grok qui vérifie si le lien fo
 Si tu dois utiliser un outil comme tar par exemple, prévois toujours d’ajouter une vérification au code pour savoir si l’outil est installé, et télécharge-le et installe-le toi-même
 La première version de UpdateProject.js doit uniquement lancer StartProject.js
 Une fois que StartProject.js a été exécuté, il ne faut plus jamais se servir de ce fichier ou le modifier
-Créez un fichier project_log.txt pour tracer les actions de update_project.js. fais en sorte que les sorties consoles soient inscrites dans le project.log.
+Créez un fichier project.log pour tracer les actions de update_project.js. fais en sorte que les sorties consoles soient inscrites dans le project.log.
 
 Catégorie : GitHub
 
