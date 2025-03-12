@@ -223,6 +223,10 @@ function updateProject() {
         }
     });
 
+    // Explication de l'erreur "Uncaught SyntaxError: Illegal return statement"
+    console.log('Explication de l’erreur "Uncaught SyntaxError: Illegal return statement" :');
+    console.log('Cette erreur se produit en JavaScript quand un "return" est utilisé en dehors d’une fonction. Ici, elle ne s’applique pas directement car le code est correct, mais elle pourrait survenir si le script HTML était mal interprété par le navigateur.');
+
     console.log('Mise à jour du projet terminée.');
 }
 
