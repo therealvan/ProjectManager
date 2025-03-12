@@ -1,8 +1,0 @@
-{
-  "name": "project-manager",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "three": "^0.174.0"
-  }
-}
