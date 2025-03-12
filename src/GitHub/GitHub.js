@@ -35,4 +35,22 @@ function listLocalFiles() {
     }
 }
 
-module.exports = { cloneOrUpdateRepo, listLocalFiles };
+function pushToRepo(branch = 'main') {
+    try {
+        console.log('Ajout des fichiers locaux à Git sans supprimer les fichiers déjà suivis...');
+        execSync('git add . --no-all', { stdio: 'inherit' });
+        console.log('Fichiers ajoutés avec succès.');
+        console.log('Création du commit...');
+        execSync('git commit -m "Mise à jour du projet depuis GitHub.js" --allow-empty', { stdio: 'inherit' });
+        console.log('Commit créé avec succès.');
+        console.log('Pousse des modifications vers le dépôt distant...');
+        execSync(`git push origin ${branch}`, { stdio: 'inherit' });
+        console.log('Modifications poussées avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du push vers le dépôt : " + error.message);
+        throw error;
+    }
+}
+
+module.exports = { cloneOrUpdateRepo, listLocalFiles, pushToRepo };
