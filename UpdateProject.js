@@ -122,7 +122,7 @@ function initWebGL() {
 </body>
 </html>
     \`;
-    fs.writeFileSync(path.join(__dirname, 'index.html'), htmlContent);
+    fs.writeFileSync(path.join(PROJECT_DIR, 'index.html'), htmlContent); // Écrit directement dans PROJECT_DIR
     console.log('WebGL initialisé avec un triangle rouge.');
 }
 
@@ -167,7 +167,7 @@ function updateProject() {
     const github = require(path.join(PROJECT_DIR, 'src', 'GitHub', 'GitHub.js'));
     github.cloneOrUpdateRepo('https://github.com/therealvan/ProjectManager.git', 'main');
     execSync('git add .', { cwd: PROJECT_DIR });
-    execSync('git commit -m "Utilisation de http-server pour WebGL" --allow-empty', { cwd: PROJECT_DIR });
+    execSync('git commit -m "Correction affichage triangle WebGL" --allow-empty', { cwd: PROJECT_DIR });
     execSync('git push origin main', { cwd: PROJECT_DIR });
     console.log('Modifications poussées vers GitHub.');
 
@@ -175,13 +175,14 @@ function updateProject() {
     const webgl = require(path.join(SRC_WEBGL_DIR, 'WebGLGame.js'));
     webgl.initWebGL();
 
-    // Utilise http-server global au lieu de Server.js
+    // Utilise http-server et force index.html comme page par défaut
     try {
-        execSync('http-server -p 8080 -c-1', { cwd: PROJECT_DIR, stdio: 'inherit' });
+        spawn('http-server', ['-p', '8080', '-c-1', '--no-dotfiles', '-i'], { cwd: PROJECT_DIR, detached: true, stdio: 'ignore' }).unref();
+        console.log('http-server démarré avec index.html par défaut.');
     } catch (error) {
         console.error('http-server n’est pas disponible ou a échoué. Installation locale...');
         execSync('npm install http-server --save-dev', { cwd: PROJECT_DIR });
-        spawn('npx', ['http-server', '-p', '8080', '-c-1'], { cwd: PROJECT_DIR, detached: true, stdio: 'ignore' }).unref();
+        spawn('npx', ['http-server', '-p', '8080', '-c-1', '--no-dotfiles', '-i'], { cwd: PROJECT_DIR, detached: true, stdio: 'ignore' }).unref();
     }
 
     // Attend que le serveur soit prêt
@@ -203,7 +204,7 @@ function updateProject() {
     const browserProcess = spawn(browserPath, [
         '--enable-webgpu',
         '--user-data-dir=' + TEMP_DIR,
-        'http://localhost:8080'
+        'http://localhost:8080/index.html' // Spécifie explicitement index.html
     ], { detached: true, stdio: 'ignore' });
     browserProcess.unref();
     console.log('Navigateur lancé avec WebGL.');

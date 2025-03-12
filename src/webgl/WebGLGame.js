@@ -61,7 +61,7 @@ function initWebGL() {
 </body>
 </html>
     `;
-    fs.writeFileSync(path.join(__dirname, 'index.html'), htmlContent);
+    fs.writeFileSync(path.join(PROJECT_DIR, 'index.html'), htmlContent); // Écrit directement dans PROJECT_DIR
     console.log('WebGL initialisé avec un triangle rouge.');
 }
 
