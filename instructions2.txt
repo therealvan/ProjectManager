@@ -1,5 +1,3 @@
-aide moi a créer un projet basé sur WEBGPU, js, html, fais moi apparaitre un cube qui tourne. suis obligatoirement les instructions suivantes :
-
 Catégorie : Général
 
 Parle-moi en français
