@@ -1,0 +1,12 @@
+[2025-03-12T17:32:04.708Z] Étape 2 : Dossier nettoyé, seuls StartProject.js et UpdateProject.js restent.
+[2025-03-12T17:32:04.710Z] Répertoire de travail changé à : C:\Users\Shadow\Desktop\Project\Test
+[2025-03-12T17:32:04.711Z] -------------
+[2025-03-12T17:32:04.711Z] Lancement du clonage à la racine...
+[2025-03-12T17:32:05.778Z] Étape 3 : Dépôt cloné avec succès à la racine sur la branche main.
+[2025-03-12T17:32:05.778Z] -------------
+[2025-03-12T17:32:05.779Z] Vérification de src/GitHub à la racine...
+[2025-03-12T17:32:05.780Z] Étape 4 : GitHub.js et DiagGitHub.js prêts à la racine.
+[2025-03-12T17:32:05.781Z] -------------
+[2025-03-12T17:32:05.788Z] Modules chargés avec succès.
+[2025-03-12T17:32:05.789Z] -------------
+[2025-03-12T17:32:05.792Z] Ajout des fichiers locaux à Git...
