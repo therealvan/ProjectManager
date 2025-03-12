@@ -65,55 +65,64 @@ const path = require('path');
 
 function initWebGL() {
     console.log('Initialisation de WebGL...');
-    const canvas = '<canvas id="gameCanvas" width="800" height="600"></canvas>';
-    fs.writeFileSync(path.join(__dirname, 'index.html'), canvas);
-    
-    const glScript = \`
-        const canvas = document.getElementById('gameCanvas');
-        const gl = canvas.getContext('webgl');
-        if (!gl) {
-            console.error('WebGL non supporté');
-            return;
-        }
-        
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        
-        const vsSource = "attribute vec4 aPosition; void main() { gl_Position = aPosition; }";
-        const fsSource = "void main() { gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); }";
-        
-        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-        gl.shaderSource(vertexShader, vsSource);
-        gl.compileShader(vertexShader);
-        
-        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-        gl.shaderSource(fragmentShader, fsSource);
-        gl.compileShader(fragmentShader);
-        
-        const program = gl.createProgram();
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragmentShader);
-        gl.linkProgram(program);
-        gl.useProgram(program);
-        
-        const positions = new Float32Array([
-            0.0,  0.5,  0.0,
-           -0.5, -0.5,  0.0,
-            0.5, -0.5,  0.0
-        ]);
-        
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-        
-        const aPosition = gl.getAttribLocation(program, 'aPosition');
-        gl.enableVertexAttribArray(aPosition);
-        gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
-        
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+    const htmlContent = \`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGL Game</title>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        window.onload = function() {
+            const canvas = document.getElementById('gameCanvas');
+            const gl = canvas.getContext('webgl');
+            if (!gl) {
+                console.error('WebGL non supporté');
+                return;
+            }
+            
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            
+            const vsSource = "attribute vec4 aPosition; void main() { gl_Position = aPosition; }";
+            const fsSource = "void main() { gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); }";
+            
+            const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+            gl.shaderSource(vertexShader, vsSource);
+            gl.compileShader(vertexShader);
+            
+            const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+            gl.shaderSource(fragmentShader, fsSource);
+            gl.compileShader(fragmentShader);
+            
+            const program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragmentShader);
+            gl.linkProgram(program);
+            gl.useProgram(program);
+            
+            const positions = new Float32Array([
+                0.0,  0.5,  0.0,
+               -0.5, -0.5,  0.0,
+                0.5, -0.5,  0.0
+            ]);
+            
+            const buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+            
+            const aPosition = gl.getAttribLocation(program, 'aPosition');
+            gl.enableVertexAttribArray(aPosition);
+            gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
+            
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+        };
+    </script>
+</body>
+</html>
     \`;
-
-    fs.appendFileSync(path.join(__dirname, 'index.html'), '<script>' + glScript + '</script>');
+    fs.writeFileSync(path.join(__dirname, 'index.html'), htmlContent);
     console.log('WebGL initialisé avec un triangle rouge.');
 }
 
@@ -126,7 +135,7 @@ const path = require('path');
 
 function startServer() {
     const server = http.createServer((req, res) => {
-        if (req.url === '/') {
+        if (req.url === '/' || req.url === '/index.html') {
             const filePath = path.join(__dirname, 'index.html');
             fs.readFile(filePath, (err, content) => {
                 if (err) {
@@ -137,6 +146,12 @@ function startServer() {
                     res.end(content);
                 }
             });
+        } else if (req.url === '/favicon.ico') {
+            res.writeHead(204); // No Content
+            res.end();
+        } else {
+            res.writeHead(404);
+            res.end('Page non trouvée');
         }
     });
     
@@ -179,7 +194,7 @@ function updateProject() {
     const github = require(path.join(PROJECT_DIR, 'src', 'GitHub', 'GitHub.js'));
     github.cloneOrUpdateRepo('https://github.com/therealvan/ProjectManager.git', 'main');
     execSync('git add .', { cwd: PROJECT_DIR });
-    execSync('git commit -m "Ajout du jeu WebGL" --allow-empty', { cwd: PROJECT_DIR });
+    execSync('git commit -m "Correction des erreurs WebGL et serveur" --allow-empty', { cwd: PROJECT_DIR });
     execSync('git push origin main', { cwd: PROJECT_DIR });
     console.log('Modifications poussées vers GitHub.');
 
@@ -188,7 +203,7 @@ function updateProject() {
     server.startServer();
 
     // Attend que le serveur soit prêt
-    let retries = 5;
+    let retries = 10; // Augmenté pour plus de fiabilité
     while (retries > 0 && !isServerAlive(8080)) {
         require('deasync').sleep(1000);
         retries--;
@@ -222,10 +237,6 @@ function updateProject() {
             console.log('Dossier temporaire supprimé.');
         }
     });
-
-    // Explication de l'erreur "Uncaught SyntaxError: Illegal return statement"
-    console.log('Explication de l’erreur "Uncaught SyntaxError: Illegal return statement" :');
-    console.log('Cette erreur se produit en JavaScript quand un "return" est utilisé en dehors d’une fonction. Ici, elle ne s’applique pas directement car le code est correct, mais elle pourrait survenir si le script HTML était mal interprété par le navigateur.');
 
     console.log('Mise à jour du projet terminée.');
 }

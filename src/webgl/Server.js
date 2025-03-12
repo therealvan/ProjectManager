@@ -5,7 +5,7 @@ const path = require('path');
 
 function startServer() {
     const server = http.createServer((req, res) => {
-        if (req.url === '/') {
+        if (req.url === '/' || req.url === '/index.html') {
             const filePath = path.join(__dirname, 'index.html');
             fs.readFile(filePath, (err, content) => {
                 if (err) {
@@ -16,6 +16,12 @@ function startServer() {
                     res.end(content);
                 }
             });
+        } else if (req.url === '/favicon.ico') {
+            res.writeHead(204); // No Content
+            res.end();
+        } else {
+            res.writeHead(404);
+            res.end('Page non trouvée');
         }
     });
     
