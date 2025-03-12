@@ -21,14 +21,17 @@ Avant d’écrire un lien dans mon code, c’est Grok qui vérifie si le lien fo
 Si tu dois utiliser un outil comme tar par exemple, prévois toujours d’ajouter une vérification au code pour savoir si l’outil est installé, et télécharge-le et installe-le toi-même
 La première version de UpdateProject.js doit uniquement lancer StartProject.js
 Une fois que StartProject.js a été exécuté, il ne faut plus jamais se servir de ce fichier ou le modifier
-Créez un fichier project_log.txt pour tracer les actions de update_project.js. fais en sorte que les sorties consoles soient inscrites dans le project_log.txt.
+Créez un fichier project_log.txt pour tracer les actions de update_project.js. fais en sorte que les sorties consoles soient inscrites dans le project.log.
 
 Catégorie : GitHub
 
 Quand un fichier est poussé, vérifie toujours si le fichier a bien été créé dans le dépôt Git
-Catégorie : Résolution bug
-Dis-moi quelles solutions tu as testées et quelle est la prochaine solution que tu vas tester
 À partir de la deuxième version de UpdateProject.js, UpdateProject.js ne doit pas faire appel à GitHub de lui-même mais utiliser les fonctions de GitHub.js et DiagGitHub.js
+Ne push sur le repository distant que lorsque je te le demande
+
+Catégorie : Résolution bug
+
+Dis-moi quelles solutions tu as testées et quelle est la prochaine solution que tu vas tester
 
 Catégorie : Documentation
 
@@ -37,7 +40,7 @@ Intègre un CHANGELOG.md mis à jour automatiquement par update_project.js lorsq
 
 Catégorie : Navigateur 
 
-Détecte automatiquement le navigateur par défaut de l’OS de l’utilisateur en utilisant les outils natifs du système (registre Windows, LaunchServices sur macOS, xdg-settings sur Linux) et lance ce navigateur avec les flags WebGPU si nécessaire, en adaptant le chemin temporaire dynamiquement via le système
+Détecte automatiquement le navigateur par défaut pour les fichiers html de l’OS de l’utilisateur en utilisant les outils natifs du système  et lance ce navigateur avec les flags WebGPU si nécessaire, en adaptant le chemin temporaire dynamiquement via le système
 Utilise le chemin exact de l’exécutable du navigateur au lieu d’un raccourci ou d’un chemin générique.
 Lance toujours le projet dans une instance isolée du navigateur en utilisant --user-data-dir avec un dossier temporaire spécifique.
 Lancement asynchrone : Utilisation de spawn avec detached: true pour éviter les blocages, et un délai pour s’assurer que le serveur est prêt.
