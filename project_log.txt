@@ -49,3 +49,14 @@
 [2025-03-12T17:24:40.804Z] Server.js créé dans src/webGL.
 [2025-03-12T17:24:40.807Z] Mise à jour du dépôt à la racine...
 [2025-03-12T17:24:42.394Z] Dépôt mis à jour avec succès à la racine.
+[2025-03-12T17:24:44.561Z] Modifications poussées vers GitHub.
+[2025-03-12T17:24:44.613Z] Initialisation de WebGL...
+[2025-03-12T17:24:44.614Z] WebGL initialisé avec un triangle rouge.
+[2025-03-12T17:24:44.654Z] Navigateur lancé avec WebGL.
+[2025-03-12T17:24:44.654Z] Mise à jour du projet terminée.
+[2025-03-12T17:24:44.655Z] Serveur démarré sur http://localhost:8080
+[2025-03-12T17:27:36.601Z] Démarrage de UpdateProject.js...
+[2025-03-12T17:27:36.607Z] Syntaxe de WebGLGame.js valide.
+[2025-03-12T17:27:36.608Z] WebGLGame.js créé dans src/webGL.
+[2025-03-12T17:27:36.611Z] Mise à jour du dépôt à la racine...
+[2025-03-12T17:27:38.371Z] Dépôt mis à jour avec succès à la racine.

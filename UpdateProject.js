@@ -127,40 +127,6 @@ function initWebGL() {
 }
 
 module.exports = { initWebGL };
-`,
-            'Server.js': `// Server.js - Serveur HTTP pour le jeu
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-
-function startServer() {
-    const server = http.createServer((req, res) => {
-        if (req.url === '/' || req.url === '/index.html') {
-            const filePath = path.join(__dirname, 'index.html');
-            fs.readFile(filePath, (err, content) => {
-                if (err) {
-                    res.writeHead(500);
-                    res.end('Erreur serveur');
-                } else {
-                    res.writeHead(200, { 'Content-Type': 'text/html' });
-                    res.end(content);
-                }
-            });
-        } else if (req.url === '/favicon.ico') {
-            res.writeHead(204); // No Content
-            res.end();
-        } else {
-            res.writeHead(404);
-            res.end('Page non trouvée');
-        }
-    });
-    
-    server.listen(8080, () => {
-        console.log('Serveur démarré sur http://localhost:8080');
-    });
-}
-
-module.exports = { startServer };
 `
         }
     }
@@ -201,13 +167,22 @@ function updateProject() {
     const github = require(path.join(PROJECT_DIR, 'src', 'GitHub', 'GitHub.js'));
     github.cloneOrUpdateRepo('https://github.com/therealvan/ProjectManager.git', 'main');
     execSync('git add .', { cwd: PROJECT_DIR });
-    execSync('git commit -m "Suppression de lockdown-install.js et mise à jour WebGL" --allow-empty', { cwd: PROJECT_DIR });
+    execSync('git commit -m "Utilisation de http-server pour WebGL" --allow-empty', { cwd: PROJECT_DIR });
     execSync('git push origin main', { cwd: PROJECT_DIR });
     console.log('Modifications poussées vers GitHub.');
 
-    // Démarre le serveur
-    const server = require(path.join(SRC_WEBGL_DIR, 'Server.js'));
-    server.startServer();
+    // Lance le jeu WebGL
+    const webgl = require(path.join(SRC_WEBGL_DIR, 'WebGLGame.js'));
+    webgl.initWebGL();
+
+    // Utilise http-server global au lieu de Server.js
+    try {
+        execSync('http-server -p 8080 -c-1', { cwd: PROJECT_DIR, stdio: 'inherit' });
+    } catch (error) {
+        console.error('http-server n’est pas disponible ou a échoué. Installation locale...');
+        execSync('npm install http-server --save-dev', { cwd: PROJECT_DIR });
+        spawn('npx', ['http-server', '-p', '8080', '-c-1'], { cwd: PROJECT_DIR, detached: true, stdio: 'ignore' }).unref();
+    }
 
     // Attend que le serveur soit prêt
     let retries = 10;
@@ -219,10 +194,6 @@ function updateProject() {
         console.error('Le serveur n’a pas démarré.');
         return;
     }
-
-    // Lance le jeu WebGL dans le navigateur
-    const webgl = require(path.join(SRC_WEBGL_DIR, 'WebGLGame.js'));
-    webgl.initWebGL();
 
     // Lance le navigateur par défaut
     const browserPath = getDefaultBrowser();
