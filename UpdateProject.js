@@ -8,14 +8,26 @@ console.log('Lancement de UpdateProject.js...');
 
 function updateProject() {
     try {
-        // Création de la structure des dossiers
-        const webglDir = path.join(__dirname, 'webgl');
-        if (!fs.existsSync(webglDir)) {
-            fs.mkdirSync(webglDir, { recursive: true });
+        // Dossier source et destination
+        const srcDir = path.join(__dirname, 'src');
+        const oldWebglDir = path.join(__dirname, 'webgl');
+        const newWebglDir = path.join(srcDir, 'webgl');
+
+        // Vérifie si src/ existe, sinon le crée
+        if (!fs.existsSync(srcDir)) {
+            fs.mkdirSync(srcDir, { recursive: true });
         }
 
-        // Fichier HTML
-        const htmlContent = `
+        // Déplace webgl/ sous src/
+        if (fs.existsSync(oldWebglDir)) {
+            fs.renameSync(oldWebglDir, newWebglDir);
+            console.log('Dossier webgl/ déplacé sous src/.');
+        } else if (!fs.existsSync(newWebglDir)) {
+            // Si webgl/ n'existe pas à la racine, crée-le sous src/
+            fs.mkdirSync(newWebglDir, { recursive: true });
+
+            // Recrée index.html
+            const htmlContent = `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -31,11 +43,11 @@ function updateProject() {
     <script src="cube.js"></script>
 </body>
 </html>
-        `;
-        fs.writeFileSync(path.join(webglDir, 'index.html'), htmlContent.trim());
+            `;
+            fs.writeFileSync(path.join(newWebglDir, 'index.html'), htmlContent.trim());
 
-        // Script WebGL pour le cube
-        const cubeContent = `
+            // Recrée cube.js
+            const cubeContent = `
 const canvas = document.getElementById('webgl-canvas');
 const gl = canvas.getContext('webgl');
 
@@ -77,17 +89,11 @@ gl.useProgram(program);
 
 // Données du cube
 const vertices = new Float32Array([
-    // Face avant
     -1, -1,  1,   1, -1,  1,   1,  1,  1,  -1,  1,  1,
-    // Face arrière
     -1, -1, -1,  -1,  1, -1,   1,  1, -1,   1, -1, -1,
-    // Face gauche
     -1, -1, -1,  -1, -1,  1,  -1,  1,  1,  -1,  1, -1,
-    // Face droite
      1, -1, -1,   1,  1, -1,   1,  1,  1,   1, -1,  1,
-    // Face dessus
     -1,  1, -1,  -1,  1,  1,   1,  1,  1,   1,  1, -1,
-    // Face dessous
     -1, -1, -1,   1, -1, -1,   1, -1,  1,  -1, -1,  1
 ]);
 const indices = new Uint16Array([
@@ -138,7 +144,7 @@ proj[11] = -1;
 proj[14] = -(2 * zFar * zNear) / (zFar - zNear);
 
 // Position initiale
-modelViewMatrix[14] = -6; // Recule le cube
+modelViewMatrix[14] = -6;
 
 // Animation
 let rotation = 0;
@@ -151,7 +157,7 @@ function render() {
     const sin = Math.sin(rotation);
     rotMatrix[0] = cos;
     rotMatrix[2] = -sin;
-    rotMatrix[5] = 1; // Identité sur Y
+    rotMatrix[5] = 1;
     rotMatrix[8] = sin;
     rotMatrix[10] = cos;
 
@@ -175,15 +181,17 @@ function render() {
 gl.enable(gl.DEPTH_TEST);
 gl.clearColor(0.1, 0.1, 0.1, 1.0);
 render();
-        `;
-        fs.writeFileSync(path.join(webglDir, 'cube.js'), cubeContent.trim());
+            `;
+            fs.writeFileSync(path.join(newWebglDir, 'cube.js'), cubeContent.trim());
+            console.log('Dossier webgl/ créé sous src/ avec les fichiers nécessaires.');
+        }
 
         // Git operations
         console.log('Ajout des fichiers locaux...');
         execSync('git add .', { stdio: 'inherit' });
 
         console.log('Création du commit...');
-        execSync('git commit -m "Ajout d’un projet WebGL avec cube tournant" --allow-empty', { stdio: 'inherit' });
+        execSync('git commit -m "Déplacement de webgl/ sous src/" --allow-empty', { stdio: 'inherit' });
 
         console.log('Pousse des modifications vers le dépôt distant...');
         execSync('git push origin main', { stdio: 'inherit' });
