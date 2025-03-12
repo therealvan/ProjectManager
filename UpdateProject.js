@@ -176,6 +176,13 @@ function updateProject() {
         console.log('Fichier project_log.txt créé.');
     }
 
+    // Vérifie si lockdown-install.js existe et le supprime s'il est présent
+    const lockdownFile = path.join(PROJECT_DIR, 'lockdown-install.js');
+    if (fs.existsSync(lockdownFile)) {
+        fs.unlinkSync(lockdownFile);
+        console.log('lockdown-install.js détecté et supprimé pour éviter les interférences.');
+    }
+
     // Crée la structure WebGL
     if (!fs.existsSync(SRC_WEBGL_DIR)) {
         fs.mkdirSync(SRC_WEBGL_DIR, { recursive: true });
@@ -194,7 +201,7 @@ function updateProject() {
     const github = require(path.join(PROJECT_DIR, 'src', 'GitHub', 'GitHub.js'));
     github.cloneOrUpdateRepo('https://github.com/therealvan/ProjectManager.git', 'main');
     execSync('git add .', { cwd: PROJECT_DIR });
-    execSync('git commit -m "Correction des erreurs WebGL et serveur" --allow-empty', { cwd: PROJECT_DIR });
+    execSync('git commit -m "Suppression de lockdown-install.js et mise à jour WebGL" --allow-empty', { cwd: PROJECT_DIR });
     execSync('git push origin main', { cwd: PROJECT_DIR });
     console.log('Modifications poussées vers GitHub.');
 
@@ -203,7 +210,7 @@ function updateProject() {
     server.startServer();
 
     // Attend que le serveur soit prêt
-    let retries = 10; // Augmenté pour plus de fiabilité
+    let retries = 10;
     while (retries > 0 && !isServerAlive(8080)) {
         require('deasync').sleep(1000);
         retries--;
