@@ -1,20 +1,10 @@
-[2025-03-12T17:14:02.318Z] Étape 2 : Dossier nettoyé, seuls StartProject.js et UpdateProject.js restent.
-[2025-03-12T17:14:02.319Z] Répertoire de travail changé à :
-[2025-03-12T17:14:02.320Z] -------------
-[2025-03-12T17:14:02.320Z] Lancement du clonage à la racine...
-[2025-03-12T17:14:03.327Z] Étape 3 : Dépôt cloné avec succès à la racine sur la branche main.
-[2025-03-12T17:14:03.328Z] -------------
-[2025-03-12T17:14:03.329Z] Vérification de src/GitHub à la racine...
-[2025-03-12T17:14:03.330Z] Étape 4 : GitHub.js et DiagGitHub.js prêts à la racine.
-[2025-03-12T17:14:03.331Z] -------------
-[2025-03-12T17:14:03.334Z] Modules chargés avec succès.
-[2025-03-12T17:14:03.335Z] -------------
-[2025-03-12T17:14:03.335Z] Ajout des fichiers locaux à Git...
-[2025-03-12T17:14:06.572Z] Étape 3 : Dépôt cloné avec succès à la racine sur la branche main.
-[2025-03-12T17:14:06.573Z] -------------
-[2025-03-12T17:14:06.574Z] Vérification de src/GitHub à la racine...
-[2025-03-12T17:14:06.575Z] Étape 4 : GitHub.js et DiagGitHub.js prêts à la racine.
-[2025-03-12T17:14:06.576Z] -------------
-[2025-03-12T17:14:06.577Z] Modules chargés avec succès.
-[2025-03-12T17:14:06.577Z] -------------
-[2025-03-12T17:14:06.578Z] Ajout des fichiers locaux à Git...
+[2025-03-12T17:18:36.375Z] Démarrage de UpdateProject.js...
+[2025-03-12T17:18:36.381Z] ERROR: Erreur de syntaxe dans WebGLGame.js : Unexpected identifier 'vec4'
+[2025-03-12T17:18:36.381Z] ERROR: Erreur lors de l'exécution de UpdateProject.js : Unexpected identifier 'vec4'
+[2025-03-12T17:19:40.183Z] Démarrage de UpdateProject.js...
+[2025-03-12T17:19:40.188Z] Syntaxe de WebGLGame.js valide.
+[2025-03-12T17:19:40.189Z] WebGLGame.js créé dans src/webGL.
+[2025-03-12T17:19:40.190Z] Syntaxe de Server.js valide.
+[2025-03-12T17:19:40.191Z] Server.js créé dans src/webGL.
+[2025-03-12T17:19:40.194Z] Mise à jour du dépôt à la racine...
+[2025-03-12T17:19:41.744Z] Dépôt mis à jour avec succès à la racine.
