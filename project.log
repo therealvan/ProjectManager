@@ -26,3 +26,13 @@
 [2025-03-12T18:02:16.238Z] Modules chargés avec succès.
 [2025-03-12T18:02:16.238Z] -------------
 [2025-03-12T18:02:16.239Z] Ajout des fichiers locaux à Git...
+[2025-03-12T18:10:49.088Z] StartProject.js exécuté avec succès.
+[2025-03-12T18:10:49.089Z] -------------
+[2025-03-12T18:10:49.090Z] Terminé !
+[2025-03-12T18:12:28.182Z] Démarrage de UpdateProject.js...
+[2025-03-12T18:12:28.187Z] -------------
+[2025-03-12T18:12:28.188Z] package.json créé.
+[2025-03-12T18:12:28.189Z] Installation de Three.js...
+[2025-03-12T18:12:32.238Z] Three.js installé avec succès.
+[2025-03-12T18:12:32.239Z] index.html créé.
+[2025-03-12T18:12:32.241Z] game.js créé.
