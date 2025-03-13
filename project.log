@@ -1,20 +1,4 @@
-[2025-03-13T18:32:49.964Z] Étape 2 : Dossier nettoyé, seuls StartProject.js et UpdateProject.js restent.
-[2025-03-13T18:32:49.964Z] Répertoire de travail changé à :
-[2025-03-13T18:32:49.965Z] -------------
-[2025-03-13T18:32:49.965Z] Lancement du clonage à la racine...
-[2025-03-13T18:32:51.248Z] Étape 3 : Dépôt cloné avec succès à la racine sur la branche main.
-[2025-03-13T18:32:51.249Z] -------------
-[2025-03-13T18:32:51.249Z] Vérification de src/GitHub à la racine...
-[2025-03-13T18:32:51.250Z] Étape 4 : GitHub.js et DiagGitHub.js prêts à la racine.
-[2025-03-13T18:32:51.251Z] -------------
-[2025-03-13T18:32:51.253Z] Modules chargés avec succès.
-[2025-03-13T18:32:51.254Z] -------------
-[2025-03-13T18:32:51.254Z] Ajout des fichiers locaux à Git...
-[2025-03-13T18:32:54.764Z] Étape 3 : Dépôt cloné avec succès à la racine sur la branche main.
-[2025-03-13T18:32:54.765Z] -------------
-[2025-03-13T18:32:54.765Z] Vérification de src/GitHub à la racine...
-[2025-03-13T18:32:54.767Z] Étape 4 : GitHub.js et DiagGitHub.js prêts à la racine.
-[2025-03-13T18:32:54.768Z] -------------
-[2025-03-13T18:32:54.768Z] Modules chargés avec succès.
-[2025-03-13T18:32:54.769Z] -------------
-[2025-03-13T18:32:54.769Z] Ajout des fichiers locaux à Git...
+[2025-03-13T18:46:51.151Z] Syntaxe de UpdateProject.js valide.
+[2025-03-13T18:46:51.154Z] Démarrage de UpdateProject.js...
+[2025-03-13T18:46:52.396Z] Fichiers locaux restaurés depuis la sauvegarde.
+[2025-03-13T18:46:52.397Z] Ajout des fichiers locaux à Git...
