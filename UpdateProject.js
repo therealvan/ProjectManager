@@ -5,7 +5,7 @@ const path = require('path');
 const PROJECT_DIR = path.join(__dirname);
 const LOG_FILE = path.join(PROJECT_DIR, 'project.log');
 const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
-const BRANCH = 'main';
+const BRANCH = 'V1.1.0';
 
 // Fonction pour écrire dans project.log
 function logToFile(message) {
