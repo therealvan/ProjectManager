@@ -6,113 +6,61 @@ const PROJECT_DIR = path.join(__dirname);
 const LOG_FILE = path.join(PROJECT_DIR, 'project.log');
 const SRC_DIR = path.join(PROJECT_DIR, 'src', 'GitHub');
 const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
-const BACKUP_DIR = path.join(PROJECT_DIR, 'backup_local');
 
-// Fonction pour écrire dans le fichier de log
 function logToFile(message) {
     const timestamp = new Date().toISOString();
     fs.appendFileSync(LOG_FILE, `[${timestamp}] ${message}\n`);
+    console.log(message);
 }
 
-// Redirige les sorties console vers le fichier de log
-const originalConsoleLog = console.log;
-console.log = function (message) {
-    originalConsoleLog.apply(console, arguments);
-    logToFile(message);
-};
-const originalConsoleError = console.error;
-console.error = function (message) {
-    originalConsoleError.apply(console, arguments);
-    logToFile(`ERROR: ${message}`);
-};
-
-// Sauvegarde les fichiers locaux
-function backupLocalFiles() {
-    if (!fs.existsSync(BACKUP_DIR)) {
-        fs.mkdirSync(BACKUP_DIR, { recursive: true });
-    }
-    const files = fs.readdirSync(PROJECT_DIR);
-    for (const file of files) {
-        if (file !== '.git' && file !== 'backup_local') {
-            const src = path.join(PROJECT_DIR, file);
-            const dest = path.join(BACKUP_DIR, file);
-            if (fs.lstatSync(src).isDirectory()) {
-                fs.cpSync(src, dest, { recursive: true, force: true });
-            } else {
-                fs.copyFileSync(src, dest);
-            }
-        }
-    }
-    console.log('Fichiers locaux sauvegardés dans backup_local.');
-}
-
-// Fonction principale pour mettre à jour le projet
 function updateProject() {
-    console.log('Démarrage de UpdateProject.js...');
-
-    // Crée le fichier de log s'il n'existe pas
-    if (!fs.existsSync(LOG_FILE)) {
-        fs.writeFileSync(LOG_FILE, 'Project log initialized\n');
-        console.log('Fichier project.log créé.');
-    }
-
-    // Sauvegarde les fichiers locaux avant toute opération
-    backupLocalFiles();
-
-    // Charge les modules GitHub
-    const github = require(path.join(SRC_DIR, 'GitHub.js'));
-
-    // Synchronise avec le dépôt distant
-    console.log('Synchronisation avec le dépôt distant...');
     try {
-        // Réinitialise le dépôt pour éviter les conflits
-        execSync('git fetch origin', { stdio: 'inherit' });
-        execSync('git reset --hard origin/main', { stdio: 'inherit' });
-        console.log('Dépôt local réinitialisé sur origin/main.');
+        logToFile('Démarrage de UpdateProject.js...');
 
-        // Restaure les fichiers locaux depuis la sauvegarde
-        const backupFiles = fs.readdirSync(BACKUP_DIR);
-        for (const file of backupFiles) {
-            const src = path.join(BACKUP_DIR, file);
-            const dest = path.join(PROJECT_DIR, file);
-            if (fs.lstatSync(src).isDirectory()) {
-                fs.cpSync(src, dest, { recursive: true, force: true });
-            } else {
-                fs.copyFileSync(src, dest);
-            }
-        }
-        console.log('Fichiers locaux restaurés depuis la sauvegarde.');
+        // Charge les modules GitHub.js et DiagGitHub.js
+        const github = require(path.join(SRC_DIR, 'GitHub.js'));
+        const debug = require(path.join(SRC_DIR, 'DiagGitHub.js'));
+
+        // Étape 1 : Mise à jour ou clonage du dépôt
+        logToFile('Mise à jour ou clonage du dépôt local...');
+        github.cloneOrUpdateRepo(REPO_URL, 'main');
+
+        // Étape 2 : Ajout des fichiers locaux
+        logToFile('Ajout des modifications locales à Git...');
+        execSync('git add .', { stdio: 'inherit' });
+        logToFile('Fichiers ajoutés avec succès.');
+
+        // Étape 3 : Création du commit
+        logToFile('Création du commit...');
+        execSync('git commit -m "Mise à jour depuis UpdateProject.js" --allow-empty', { stdio: 'inherit' });
+        logToFile('Commit créé avec succès.');
+
+        // Étape 4 : Push vers le dépôt distant
+        logToFile('Push des modifications vers le dépôt distant...');
+        execSync('git push origin main', { stdio: 'inherit' });
+        logToFile('Modifications poussées avec succès.');
+
+        // Étape 5 : Vérification des fichiers locaux
+        logToFile('Vérification des fichiers locaux après push...');
+        github.listLocalFiles();
+
     } catch (error) {
-        console.error('Erreur lors de la synchronisation : ' + error.message);
+        logToFile(`Erreur lors de la mise à jour ou du push : ${error.message}`);
+        const debug = require(path.join(SRC_DIR, 'DiagGitHub.js'));
+        debug.log(`Erreur dans updateProject : ${error.message}`);
         throw error;
     }
-
-    // Ajoute, commit et push les modifications
-    console.log('Ajout des fichiers locaux à Git...');
-    execSync('git add .', { stdio: 'inherit' });
-    console.log('Fichiers ajoutés avec succès.');
-
-    console.log('Création du commit...');
-    execSync('git commit -m "Mise à jour du projet depuis UpdateProject.js" --allow-empty', { stdio: 'inherit' });
-    console.log('Commit créé avec succès.');
-
-    console.log('Pousse des modifications vers le dépôt distant...');
-    execSync('git push origin main', { stdio: 'inherit' });
-    console.log('Modifications poussées avec succès.');
-
-    // Vérifie les fichiers locaux après le push
-    github.listLocalFiles();
-
-    console.log('UpdateProject.js terminé.');
 }
 
-// Vérifie la syntaxe avant exécution
 try {
-    new Function(fs.readFileSync(__filename, 'utf8'));
-    console.log('Syntaxe de UpdateProject.js valide.');
+    if (!fs.existsSync(LOG_FILE)) {
+        fs.writeFileSync(LOG_FILE, 'Initialisation du journal de projet\n');
+    }
+    logToFile('Tentative d’exécution de updateProject...');
     updateProject();
+    logToFile('UpdateProject.js terminé avec succès.');
 } catch (error) {
-    console.error('Erreur dans UpdateProject.js : ' + error.message);
+    logToFile(`Erreur globale dans UpdateProject.js : ${error.message}`);
 }
 
 module.exports = { updateProject };
