@@ -40,6 +40,24 @@ function pushLocalChanges(branch = 'main') {
     }
 }
 
+function renameBranch(oldBranch, newBranch) {
+    try {
+        console.log("Renommage de la branche " + oldBranch + " en " + newBranch + "...");
+        execSync('git add .', { stdio: 'inherit' });
+        execSync('git commit -m "Sauvegarde avant renommage" --allow-empty', { stdio: 'inherit' });
+        execSync(`git branch -m ${oldBranch} ${newBranch}`, { stdio: 'inherit' });
+        console.log('Branche renommée localement.');
+        execSync(`git push origin :${oldBranch} ${newBranch}`, { stdio: 'inherit' });
+        console.log('Branche renommée poussée vers le dépôt distant.');
+        execSync(`git push origin -u ${newBranch}`, { stdio: 'inherit' });
+        console.log("Branche " + newBranch + " définie comme suivi distant.");
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du renommage de la branche : " + error.message);
+        throw error;
+    }
+}
+
 function listLocalFiles() {
     try {
         const files = fs.readdirSync('.', { withFileTypes: true });
@@ -53,4 +71,4 @@ function listLocalFiles() {
     }
 }
 
-module.exports = { cloneOrUpdateRepo, pushLocalChanges, listLocalFiles };
+module.exports = { cloneOrUpdateRepo, pushLocalChanges, renameBranch, listLocalFiles };
