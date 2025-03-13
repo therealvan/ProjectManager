@@ -1,38 +1,25 @@
-// GitHub.js - Module pour interagir avec GitHub
 const { execSync } = require('child_process');
-const fs = require('fs');
+const path = require('path');
 
-function cloneOrUpdateRepo(repoUrl, branch = 'main') {
-    try {
-        if (!fs.existsSync('.git')) {
-            console.log('Clonage du dépôt à la racine...');
-            execSync(`git clone -b ${branch} ${repoUrl} .`, { stdio: 'inherit' });
-            console.log('Dépôt cloné avec succès à la racine.');
-        } else {
-            console.log('Mise à jour du dépôt à la racine...');
-            execSync('git fetch origin', { stdio: 'inherit' });
-            execSync(`git checkout ${branch}`, { stdio: 'inherit' });
-            execSync(`git pull origin ${branch}`, { stdio: 'inherit' });
-            console.log('Dépôt mis à jour avec succès à la racine.');
-        }
-    } catch (error) {
-        const debug = require('./DiagGitHub.js');
-        debug.log("Erreur lors du clonage ou de la mise à jour du dépôt : " + error.message);
-        throw error;
-    }
+const PROJECT_DIR = path.join(__dirname, '..', '..');
+
+function addAll() {
+    execSync('git add .', { cwd: PROJECT_DIR, stdio: 'inherit' });
 }
 
-function listLocalFiles() {
-    try {
-        const files = fs.readdirSync('.', { withFileTypes: true });
-        const fileList = files.map(item => item.isDirectory() ? item.name + '/' : item.name);
-        console.log('Fichiers locaux après téléchargement :', fileList);
-        return fileList;
-    } catch (error) {
-        const debug = require('./DiagGitHub.js');
-        debug.log("Erreur lors de la liste des fichiers locaux : " + error.message);
-        throw error;
-    }
+function commit(message) {
+    execSync(`git commit -m "${message}"`, { cwd: PROJECT_DIR, stdio: 'inherit' });
 }
 
-module.exports = { cloneOrUpdateRepo, listLocalFiles };
+function push(branch) {
+    execSync(`git push origin ${branch}`, { cwd: PROJECT_DIR, stdio: 'inherit' });
+}
+
+function createRelease(tag, branch, title) {
+    execSync(`git tag ${tag}`, { cwd: PROJECT_DIR, stdio: 'inherit' });
+    execSync(`git push origin ${tag}`, { cwd: PROJECT_DIR, stdio: 'inherit' });
+    // Note : La création d'une release GitHub nécessite l'API GitHub ou gh CLI. Ici, on utilise une approximation avec un tag.
+    execSync(`gh release create ${tag} --title "${title}" --target ${branch} --notes "Release ${tag}"`, { cwd: PROJECT_DIR, stdio: 'inherit' });
+}
+
+module.exports = { addAll, commit, push, createRelease };
