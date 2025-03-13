@@ -5,7 +5,7 @@ const path = require('path');
 const PROJECT_DIR = path.join(__dirname);
 const LOG_FILE = path.join(PROJECT_DIR, 'project.log');
 const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
-const BRANCH = 'V1.1.0';
+const BRANCH = 'main';
 
 // Fonction pour écrire dans project.log
 function logToFile(message) {
@@ -23,7 +23,7 @@ console.log = function (message) {
 function updateProject() {
     console.log('Lancement de UpdateProject.js...');
     try {
-        // Modification de GitHub.js pour gérer les changements locaux
+        // Mise à jour de GitHub.js avec la logique de gestion des changements locaux
         const githubPath = path.join(PROJECT_DIR, 'src', 'GitHub', 'GitHub.js');
         fs.writeFileSync(githubPath, 
             `// GitHub.js - Module pour interagir avec GitHub\r\n` +
@@ -68,6 +68,7 @@ function updateProject() {
             `module.exports = { cloneOrUpdateRepo, listLocalFiles };\r\n`
         );
 
+        // Appel de la fonction depuis GitHub.js
         const github = require(githubPath);
         console.log(`Connexion à la branche ${BRANCH} du dépôt ${REPO_URL}`);
         github.cloneOrUpdateRepo(REPO_URL, BRANCH);
