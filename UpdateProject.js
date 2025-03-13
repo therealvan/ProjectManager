@@ -4,63 +4,77 @@ const path = require('path');
 
 const PROJECT_DIR = path.join(__dirname);
 const LOG_FILE = path.join(PROJECT_DIR, 'project.log');
-const SRC_DIR = path.join(PROJECT_DIR, 'src', 'GitHub');
 const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
+const BRANCH = 'V1.1.0';
 
+// Fonction pour écrire dans project.log
 function logToFile(message) {
     const timestamp = new Date().toISOString();
     fs.appendFileSync(LOG_FILE, `[${timestamp}] ${message}\n`);
-    console.log(message);
 }
+
+// Redirige console.log vers project.log
+const originalConsoleLog = console.log;
+console.log = function (message) {
+    logToFile(message);
+    originalConsoleLog.apply(console, arguments);
+};
 
 function updateProject() {
+    console.log('Lancement de UpdateProject.js...');
     try {
-        logToFile('Démarrage de UpdateProject.js...');
+        // Modification de GitHub.js pour gérer les changements locaux
+        const githubPath = path.join(PROJECT_DIR, 'src', 'GitHub', 'GitHub.js');
+        fs.writeFileSync(githubPath, 
+            `// GitHub.js - Module pour interagir avec GitHub\r\n` +
+            `const { execSync } = require('child_process');\r\n` +
+            `const fs = require('fs');\r\n` +
+            `\r\n` +
+            `function cloneOrUpdateRepo(repoUrl, branch = 'main') {\r\n` +
+            `    try {\r\n` +
+            `        if (!fs.existsSync('.git')) {\r\n` +
+            `            console.log('Clonage du dépôt à la racine...');\r\n` +
+            `            execSync(\`git clone -b \${branch} \${repoUrl} .\`, { stdio: 'inherit' });\r\n` +
+            `            console.log('Dépôt cloné avec succès à la racine.');\r\n` +
+            `        } else {\r\n` +
+            `            console.log('Mise à jour du dépôt à la racine...');\r\n` +
+            `            execSync('git fetch origin', { stdio: 'inherit' });\r\n` +
+            `            execSync('git add .', { stdio: 'inherit' });\r\n` +
+            `            execSync('git commit -m "Sauvegarde automatique avant changement de branche" --allow-empty', { stdio: 'inherit' });\r\n` +
+            `            execSync(\`git checkout \${branch}\`, { stdio: 'inherit' });\r\n` +
+            `            execSync(\`git pull origin \${branch}\`, { stdio: 'inherit' });\r\n` +
+            `            console.log('Dépôt mis à jour avec succès à la racine.');\r\n` +
+            `        }\r\n` +
+            `    } catch (error) {\r\n` +
+            `        const debug = require('./DiagGitHub.js');\r\n` +
+            `        debug.log("Erreur lors du clonage ou de la mise à jour du dépôt : " + error.message);\r\n` +
+            `        throw error;\r\n` +
+            `    }\r\n` +
+            `}\r\n` +
+            `\r\n` +
+            `function listLocalFiles() {\r\n` +
+            `    try {\r\n` +
+            `        const files = fs.readdirSync('.', { withFileTypes: true });\r\n` +
+            `        const fileList = files.map(item => item.isDirectory() ? item.name + '/' : item.name);\r\n` +
+            `        console.log('Fichiers locaux après téléchargement :', fileList);\r\n` +
+            `        return fileList;\r\n` +
+            `    } catch (error) {\r\n` +
+            `        const debug = require('./DiagGitHub.js');\r\n` +
+            `        debug.log("Erreur lors de la liste des fichiers locaux : " + error.message);\r\n` +
+            `        throw error;\r\n` +
+            `    }\r\n` +
+            `}\r\n` +
+            `\r\n` +
+            `module.exports = { cloneOrUpdateRepo, listLocalFiles };\r\n`
+        );
 
-        // Charge les modules GitHub.js et DiagGitHub.js
-        const github = require(path.join(SRC_DIR, 'GitHub.js'));
-        const debug = require(path.join(SRC_DIR, 'DiagGitHub.js'));
-
-        // Étape 1 : Mise à jour ou clonage du dépôt
-        logToFile('Mise à jour ou clonage du dépôt local...');
-        github.cloneOrUpdateRepo(REPO_URL, 'main');
-
-        // Étape 2 : Ajout des fichiers locaux
-        logToFile('Ajout des modifications locales à Git...');
-        execSync('git add .', { stdio: 'inherit' });
-        logToFile('Fichiers ajoutés avec succès.');
-
-        // Étape 3 : Création du commit
-        logToFile('Création du commit...');
-        execSync('git commit -m "Mise à jour depuis UpdateProject.js" --allow-empty', { stdio: 'inherit' });
-        logToFile('Commit créé avec succès.');
-
-        // Étape 4 : Push vers le dépôt distant
-        logToFile('Push des modifications vers le dépôt distant...');
-        execSync('git push origin main', { stdio: 'inherit' });
-        logToFile('Modifications poussées avec succès.');
-
-        // Étape 5 : Vérification des fichiers locaux
-        logToFile('Vérification des fichiers locaux après push...');
-        github.listLocalFiles();
-
+        const github = require(githubPath);
+        console.log(`Connexion à la branche ${BRANCH} du dépôt ${REPO_URL}`);
+        github.cloneOrUpdateRepo(REPO_URL, BRANCH);
+        console.log(`Branche ${BRANCH} connectée avec succès.`);
     } catch (error) {
-        logToFile(`Erreur lors de la mise à jour ou du push : ${error.message}`);
-        const debug = require(path.join(SRC_DIR, 'DiagGitHub.js'));
-        debug.log(`Erreur dans updateProject : ${error.message}`);
-        throw error;
+        console.error('Erreur lors de la connexion à la branche :', error.message);
     }
 }
 
-try {
-    if (!fs.existsSync(LOG_FILE)) {
-        fs.writeFileSync(LOG_FILE, 'Initialisation du journal de projet\n');
-    }
-    logToFile('Tentative d’exécution de updateProject...');
-    updateProject();
-    logToFile('UpdateProject.js terminé avec succès.');
-} catch (error) {
-    logToFile(`Erreur globale dans UpdateProject.js : ${error.message}`);
-}
-
-module.exports = { updateProject };
+updateProject();

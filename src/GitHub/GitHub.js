@@ -11,6 +11,8 @@ function cloneOrUpdateRepo(repoUrl, branch = 'main') {
         } else {
             console.log('Mise à jour du dépôt à la racine...');
             execSync('git fetch origin', { stdio: 'inherit' });
+            execSync('git add .', { stdio: 'inherit' });
+            execSync('git commit -m "Sauvegarde automatique avant changement de branche" --allow-empty', { stdio: 'inherit' });
             execSync(`git checkout ${branch}`, { stdio: 'inherit' });
             execSync(`git pull origin ${branch}`, { stdio: 'inherit' });
             console.log('Dépôt mis à jour avec succès à la racine.');
