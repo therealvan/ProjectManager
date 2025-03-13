@@ -5,7 +5,7 @@ const path = require('path');
 const PROJECT_DIR = path.join(__dirname);
 const LOG_FILE = path.join(PROJECT_DIR, 'project.log');
 const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
-const BRANCH = 'V1.1.0';
+const BRANCH = 'main';
 
 // Fonction pour écrire dans project.log
 function logToFile(message) {
@@ -23,7 +23,7 @@ console.log = function (message) {
 function updateProject() {
     console.log('Lancement de UpdateProject.js...');
     try {
-        // Mise à jour de GitHub.js avec la logique de gestion des changements locaux
+        // Mise à jour de GitHub.js avec la logique de gestion des changements locaux et push
         const githubPath = path.join(PROJECT_DIR, 'src', 'GitHub', 'GitHub.js');
         fs.writeFileSync(githubPath, 
             `// GitHub.js - Module pour interagir avec GitHub\r\n` +
@@ -52,6 +52,22 @@ function updateProject() {
             `    }\r\n` +
             `}\r\n` +
             `\r\n` +
+            `function pushLocalChanges(branch = 'main') {\r\n` +
+            `    try {\r\n` +
+            `        console.log('Ajout des modifications locales...');\r\n` +
+            `        execSync('git add .', { stdio: 'inherit' });\r\n` +
+            `        console.log('Création du commit...');\r\n` +
+            `        execSync('git commit -m "Push des modifications locales" --allow-empty', { stdio: 'inherit' });\r\n` +
+            `        console.log('Pousse vers le dépôt distant...');\r\n` +
+            `        execSync(\`git push origin \${branch}\`, { stdio: 'inherit' });\r\n` +
+            `        console.log('Modifications poussées avec succès.');\r\n` +
+            `    } catch (error) {\r\n` +
+            `        const debug = require('./DiagGitHub.js');\r\n` +
+            `        debug.log("Erreur lors du push des modifications : " + error.message);\r\n` +
+            `        throw error;\r\n` +
+            `    }\r\n` +
+            `}\r\n` +
+            `\r\n` +
             `function listLocalFiles() {\r\n` +
             `    try {\r\n` +
             `        const files = fs.readdirSync('.', { withFileTypes: true });\r\n` +
@@ -65,16 +81,18 @@ function updateProject() {
             `    }\r\n` +
             `}\r\n` +
             `\r\n` +
-            `module.exports = { cloneOrUpdateRepo, listLocalFiles };\r\n`
+            `module.exports = { cloneOrUpdateRepo, pushLocalChanges, listLocalFiles };\r\n`
         );
 
-        // Appel de la fonction depuis GitHub.js
+        // Appel des fonctions depuis GitHub.js
         const github = require(githubPath);
         console.log(`Connexion à la branche ${BRANCH} du dépôt ${REPO_URL}`);
         github.cloneOrUpdateRepo(REPO_URL, BRANCH);
-        console.log(`Branche ${BRANCH} connectée avec succès.`);
+        console.log(`Pousse des modifications locales vers ${BRANCH}`);
+        github.pushLocalChanges(BRANCH);
+        console.log(`Branche ${BRANCH} mise à jour et poussée avec succès.`);
     } catch (error) {
-        console.error('Erreur lors de la connexion à la branche :', error.message);
+        console.error('Erreur lors de la mise à jour ou du push :', error.message);
     }
 }
 
