@@ -15,9 +15,25 @@ function checkToolInstalled(toolName) {
 function installChocolatey() {
     if (!checkToolInstalled('choco')) {
         console.log('Chocolatey non détecté, installation...');
-        execSync('powershell -Command "Set-ExecutionPolicy Bypass -Scope CurrentUser; iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex"', { stdio: 'inherit' });
-        console.log('Chocolatey installé avec succès.');
-        process.env.PATH += ';C:\\ProgramData\\chocolatey\\bin';
+        try {
+            execSync('powershell -Command "Set-ExecutionPolicy Bypass -Scope CurrentUser; iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex"', { stdio: 'inherit' });
+            console.log('Chocolatey installé avec succès.');
+            process.env.PATH += ';C:\\ProgramData\\chocolatey\\bin';
+            // Nettoie les fichiers de verrouillage potentiels
+            const lockDir = 'C:\\ProgramData\\chocolatey\\lib';
+            if (fs.existsSync(lockDir)) {
+                fs.readdirSync(lockDir).forEach(file => {
+                    const filePath = path.join(lockDir, file);
+                    try {
+                        fs.unlinkSync(filePath);
+                    } catch (e) {
+                        console.log(`Impossible de supprimer ${filePath} : ${e.message}`);
+                    }
+                });
+            }
+        } catch (error) {
+            throw new Error(`Échec de l’installation de Chocolatey : ${error.message}`);
+        }
     } else {
         console.log('Chocolatey déjà disponible.');
     }

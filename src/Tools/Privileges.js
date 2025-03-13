@@ -26,7 +26,7 @@ function elevatePrivileges() {
         logToFile('Privilèges administratifs requis, tentative d’élévation...');
         const elevateScript = path.join(os.tmpdir(), 'elevate.bat');
         const scriptContent = `@echo off
-powershell -Command "Start-Process node -ArgumentList '${path.join(PROJECT_DIR, 'LaunchProject.js')}' -Verb RunAs"
+powershell -Command "Start-Process node -ArgumentList '${path.join(PROJECT_DIR, 'UpdateProject.js')}' -Verb RunAs"
 exit`;
         fs.writeFileSync(elevateScript, scriptContent);
         spawn(elevateScript, { detached: true, shell: true, stdio: 'ignore' }).unref();
