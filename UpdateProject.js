@@ -5,8 +5,7 @@ const path = require('path');
 const PROJECT_DIR = path.join(__dirname);
 const LOG_FILE = path.join(PROJECT_DIR, 'project.log');
 const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
-const OLD_BRANCH = 'main';
-const NEW_BRANCH = 'V1.0.0';
+const BRANCH = 'V1.0.0';
 
 // Fonction pour écrire dans project.log
 function logToFile(message) {
@@ -24,7 +23,7 @@ console.log = function (message) {
 function updateProject() {
     console.log('Lancement de UpdateProject.js...');
     try {
-        // Mise à jour de GitHub.js avec la logique corrigée
+        // Mise à jour de GitHub.js avec la logique existante
         const githubPath = path.join(PROJECT_DIR, 'src', 'GitHub', 'GitHub.js');
         fs.writeFileSync(githubPath, 
             `// GitHub.js - Module pour interagir avec GitHub\r\n` +
@@ -74,12 +73,14 @@ function updateProject() {
             `        console.log("Renommage de la branche " + oldBranch + " en " + newBranch + "...");\r\n` +
             `        execSync('git add .', { stdio: 'inherit' });\r\n` +
             `        execSync('git commit -m "Sauvegarde avant renommage" --allow-empty', { stdio: 'inherit' });\r\n` +
+            `        execSync(\`git checkout \${oldBranch}\`, { stdio: 'inherit' });\r\n` +
             `        execSync(\`git branch -m \${oldBranch} \${newBranch}\`, { stdio: 'inherit' });\r\n` +
             `        console.log('Branche renommée localement.');\r\n` +
-            `        execSync(\`git push origin :\${oldBranch} \${newBranch}\`, { stdio: 'inherit' });\r\n` +
-            `        console.log('Branche renommée poussée vers le dépôt distant.');\r\n` +
+            `        execSync(\`git push origin \${newBranch}\`, { stdio: 'inherit' });\r\n` +
+            `        console.log('Nouvelle branche poussée vers le dépôt distant.');\r\n` +
             `        execSync(\`git push origin -u \${newBranch}\`, { stdio: 'inherit' });\r\n` +
             `        console.log("Branche " + newBranch + " définie comme suivi distant.");\r\n` +
+            `        console.log("Note : La branche " + oldBranch + " existe toujours sur le dépôt distant. Supprimez-la manuellement sur GitHub après avoir défini " + newBranch + " comme branche par défaut.");\r\n` +
             `    } catch (error) {\r\n` +
             `        const debug = require('./DiagGitHub.js');\r\n` +
             `        debug.log("Erreur lors du renommage de la branche : " + error.message);\r\n` +
@@ -105,13 +106,13 @@ function updateProject() {
 
         // Appel des fonctions depuis GitHub.js
         const github = require(githubPath);
-        console.log(`Connexion à la branche ${OLD_BRANCH} du dépôt ${REPO_URL}`);
-        github.cloneOrUpdateRepo(REPO_URL, OLD_BRANCH);
-        console.log(`Renommage de ${OLD_BRANCH} en ${NEW_BRANCH}`);
-        github.renameBranch(OLD_BRANCH, NEW_BRANCH);
-        console.log(`Branche renommée en ${NEW_BRANCH} et poussée avec succès.`);
+        console.log(`Connexion à la branche ${BRANCH} du dépôt ${REPO_URL}`);
+        github.cloneOrUpdateRepo(REPO_URL, BRANCH);
+        console.log(`Pousse des modifications locales vers ${BRANCH}`);
+        github.pushLocalChanges(BRANCH);
+        console.log(`Modifications locales poussées avec succès vers ${BRANCH}.`);
     } catch (error) {
-        console.error('Erreur lors de la mise à jour ou du renommage :', error.message);
+        console.error('Erreur lors de la mise à jour ou du push :', error.message);
     }
 }
 

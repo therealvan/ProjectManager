@@ -45,12 +45,14 @@ function renameBranch(oldBranch, newBranch) {
         console.log("Renommage de la branche " + oldBranch + " en " + newBranch + "...");
         execSync('git add .', { stdio: 'inherit' });
         execSync('git commit -m "Sauvegarde avant renommage" --allow-empty', { stdio: 'inherit' });
+        execSync(`git checkout ${oldBranch}`, { stdio: 'inherit' });
         execSync(`git branch -m ${oldBranch} ${newBranch}`, { stdio: 'inherit' });
         console.log('Branche renommée localement.');
-        execSync(`git push origin :${oldBranch} ${newBranch}`, { stdio: 'inherit' });
-        console.log('Branche renommée poussée vers le dépôt distant.');
+        execSync(`git push origin ${newBranch}`, { stdio: 'inherit' });
+        console.log('Nouvelle branche poussée vers le dépôt distant.');
         execSync(`git push origin -u ${newBranch}`, { stdio: 'inherit' });
         console.log("Branche " + newBranch + " définie comme suivi distant.");
+        console.log("Note : La branche " + oldBranch + " existe toujours sur le dépôt distant. Supprimez-la manuellement sur GitHub après avoir défini " + newBranch + " comme branche par défaut.");
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors du renommage de la branche : " + error.message);
