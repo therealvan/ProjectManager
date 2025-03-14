@@ -2,6 +2,13 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 
+function verifyGitSuccess(commandOutput, successMessage) {
+    if (commandOutput && commandOutput.includes('fatal')) {
+        throw new Error('Échec de l’opération Git : ' + commandOutput);
+    }
+    console.log(successMessage);
+}
+
 function getCurrentBranch() {
     if (fs.existsSync('Branche.git')) {
         return fs.readFileSync('Branche.git', 'utf8').trim();
@@ -14,14 +21,16 @@ function cloneOrUpdateRepo(repoUrl, branch = 'V1.0.0') {
     try {
         if (!fs.existsSync('.git')) {
             console.log('Clonage du dépôt à la racine...');
-            execSync(`git clone -b ${branch} ${repoUrl} .`, { stdio: 'inherit' });
-            console.log('Dépôt cloné avec succès à la racine.');
+            const output = execSync(`git clone -b ${branch} ${repoUrl} .`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Dépôt cloné avec succès à la racine.');
         } else {
             console.log('Mise à jour du dépôt à la racine...');
-            execSync('git fetch origin', { stdio: 'inherit' });
-            execSync(`git checkout ${branch}`, { stdio: 'inherit' });
-            execSync(`git pull origin ${branch}`, { stdio: 'inherit' });
-            console.log('Dépôt mis à jour avec succès à la racine.');
+            let output = execSync('git fetch origin', { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Fetch effectué avec succès.');
+            output = execSync(`git checkout ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Checkout de la branche effectué avec succès.');
+            output = execSync(`git pull origin ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Dépôt mis à jour avec succès à la racine.');
         }
     } catch (error) {
         const debug = require('./DiagGitHub.js');
@@ -45,8 +54,9 @@ function listLocalFiles() {
 
 function addFiles(pattern) {
     try {
-        execSync(`git add ${pattern}`, { stdio: 'inherit' });
-        console.log('Fichiers ajoutés à l’index.');
+        console.log('Ajout des fichiers à l’index...');
+        const output = execSync(`git add ${pattern}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Fichiers ajoutés à l’index.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors de l’ajout des fichiers : " + error.message);
@@ -56,8 +66,9 @@ function addFiles(pattern) {
 
 function commitChanges(message) {
     try {
-        execSync(`git commit -m "${message}" --allow-empty`, { stdio: 'inherit' });
-        console.log('Commit créé avec succès.');
+        console.log('Création du commit...');
+        const output = execSync(`git commit -m "${message}" --allow-empty`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Commit créé avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors du commit : " + error.message);
@@ -67,8 +78,9 @@ function commitChanges(message) {
 
 function pushChanges(branch) {
     try {
-        execSync(`git push origin ${branch}`, { stdio: 'inherit' });
-        console.log('Modifications poussées avec succès.');
+        console.log('Poussée des modifications vers GitHub...');
+        const output = execSync(`git push origin ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Modifications poussées avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors du push : " + error.message);
@@ -78,8 +90,9 @@ function pushChanges(branch) {
 
 function pullChanges(branch) {
     try {
-        execSync(`git pull origin ${branch}`, { stdio: 'inherit' });
-        console.log('Modifications tirées avec succès.');
+        console.log('Tirage des modifications depuis GitHub...');
+        const output = execSync(`git pull origin ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Modifications tirées avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors du pull : " + error.message);
@@ -89,9 +102,11 @@ function pullChanges(branch) {
 
 function createBranch(branchName) {
     try {
-        execSync(`git checkout -b ${branchName}`, { stdio: 'inherit' });
-        execSync(`git push origin ${branchName}`, { stdio: 'inherit' });
-        console.log('Branche ${branchName} créée et poussée avec succès.');
+        console.log('Création de la branche...');
+        let output = execSync(`git checkout -b ${branchName}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Branche ${branchName} créée localement.');
+        output = execSync(`git push origin ${branchName}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Branche ${branchName} poussée avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors de la création de la branche : " + error.message);
@@ -101,9 +116,11 @@ function createBranch(branchName) {
 
 function createRelease(version, message) {
     try {
-        execSync(`git tag ${version}`, { stdio: 'inherit' });
-        execSync(`git push origin ${version}`, { stdio: 'inherit' });
-        console.log('Release ${version} créée avec succès.');
+        console.log('Création de la release...');
+        let output = execSync(`git tag ${version}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Tag ${version} créé avec succès.');
+        output = execSync(`git push origin ${version}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Release ${version} poussée avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors de la création de la release : " + error.message);
@@ -113,8 +130,9 @@ function createRelease(version, message) {
 
 function checkoutBranch(branch) {
     try {
-        execSync(`git checkout ${branch}`, { stdio: 'inherit' });
-        console.log('Branche ${branch} checkout avec succès.');
+        console.log('Checkout de la branche...');
+        const output = execSync(`git checkout ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Branche ${branch} checkout avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors du checkout : " + error.message);
@@ -124,10 +142,13 @@ function checkoutBranch(branch) {
 
 function mergeBranch(sourceBranch, targetBranch) {
     try {
-        execSync(`git checkout ${targetBranch}`, { stdio: 'inherit' });
-        execSync(`git merge ${sourceBranch}`, { stdio: 'inherit' });
-        execSync(`git push origin ${targetBranch}`, { stdio: 'inherit' });
-        console.log('Fusion de ${sourceBranch} dans ${targetBranch} réussie.');
+        console.log('Fusion des branches...');
+        let output = execSync(`git checkout ${targetBranch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Checkout de ${targetBranch} réussi.');
+        output = execSync(`git merge ${sourceBranch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Fusion de ${sourceBranch} dans ${targetBranch} réussie.');
+        output = execSync(`git push origin ${targetBranch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Modifications poussées après fusion.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors de la fusion : " + error.message);
@@ -138,11 +159,13 @@ function mergeBranch(sourceBranch, targetBranch) {
 function deleteBranch(branch, remote = false) {
     try {
         if (remote) {
-            execSync(`git push origin --delete ${branch}`, { stdio: 'inherit' });
-            console.log('Branche distante ${branch} supprimée.');
+            console.log('Suppression de la branche distante...');
+            const output = execSync(`git push origin --delete ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Branche distante ${branch} supprimée.');
         } else {
-            execSync(`git branch -D ${branch}`, { stdio: 'inherit' });
-            console.log('Branche locale ${branch} supprimée.');
+            console.log('Suppression de la branche locale...');
+            const output = execSync(`git branch -D ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Branche locale ${branch} supprimée.');
         }
     } catch (error) {
         const debug = require('./DiagGitHub.js');
@@ -153,6 +176,7 @@ function deleteBranch(branch, remote = false) {
 
 function status() {
     try {
+        console.log('Vérification de l’état du dépôt...');
         const statusOutput = execSync('git status', { encoding: 'utf8' });
         console.log('État du dépôt :', statusOutput);
         return statusOutput;
@@ -165,8 +189,9 @@ function status() {
 
 function fetchRepo() {
     try {
-        execSync('git fetch origin', { stdio: 'inherit' });
-        console.log('Dépôt fetch avec succès.');
+        console.log('Fetch du dépôt...');
+        const output = execSync('git fetch origin', { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Dépôt fetch avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors du fetch : " + error.message);
@@ -176,8 +201,9 @@ function fetchRepo() {
 
 function stashChanges() {
     try {
-        execSync('git stash', { stdio: 'inherit' });
-        console.log('Changements stashés avec succès.');
+        console.log('Stash des changements...');
+        const output = execSync('git stash', { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Changements stashés avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors du stash : " + error.message);
@@ -187,8 +213,9 @@ function stashChanges() {
 
 function applyStash(index = 0) {
     try {
-        execSync(`git stash apply stash{${index}}`, { stdio: 'inherit' });
-        console.log('Stash ${index} appliqué avec succès.');
+        console.log('Application du stash...');
+        const output = execSync(`git stash apply stash{${index}}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Stash ${index} appliqué avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors de l’application du stash : " + error.message);
@@ -198,9 +225,10 @@ function applyStash(index = 0) {
 
 function resetChanges(hard = false) {
     try {
+        console.log('Reset des changements...');
         const mode = hard ? '--hard' : '--soft';
-        execSync(`git reset ${mode}`, { stdio: 'inherit' });
-        console.log('Reset des changements effectué avec succès.');
+        const output = execSync(`git reset ${mode}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Reset des changements effectué avec succès.');
     } catch (error) {
         const debug = require('./DiagGitHub.js');
         debug.log("Erreur lors du reset : " + error.message);
@@ -210,6 +238,7 @@ function resetChanges(hard = false) {
 
 function logCommits(limit = 10) {
     try {
+        console.log('Récupération des commits...');
         const logOutput = execSync(`git log -n ${limit} --oneline`, { encoding: 'utf8' });
         console.log('Historique des commits :', logOutput);
         return logOutput;
@@ -222,6 +251,7 @@ function logCommits(limit = 10) {
 
 function diffChanges() {
     try {
+        console.log('Récupération des différences...');
         const diffOutput = execSync('git diff', { encoding: 'utf8' });
         console.log('Différences :', diffOutput);
         return diffOutput;
