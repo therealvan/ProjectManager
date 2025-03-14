@@ -8,6 +8,8 @@
 │       └── GitHub.js
 ├── Arborescence.grok
 ├── Arborescence.js
+├── Fonctions.grok
+├── Fonctions.js
 ├── StartProject.js
 ├── UpdateProject.js
 └── V.1.0.0
