@@ -271,6 +271,10 @@ module.exports = {
     fs.writeFileSync('./src/GitHub/GitHub.js', gitHubContent);
     console.log('GitHub.js mis à jour avec getCurrentBranch utilisant uniquement Branche.git.');
 
+    // Vider le cache du module GitHub.js
+    delete require.cache[require.resolve('./src/GitHub/GitHub.js')];
+    console.log('Cache de GitHub.js vidé.');
+
     // Chargement du module mis à jour
     const { getCurrentBranch, addFiles, commitChanges, pushChanges } = require('./src/GitHub/GitHub.js');
 
@@ -278,7 +282,7 @@ module.exports = {
     addFiles('.');
     
     console.log('Création du commit...');
-    commitChanges('Mise à jour de GitHub.js avec toutes les fonctionnalités conservées');
+    commitChanges('Mise à jour de GitHub.js avec cache vidé');
     
     console.log('Push vers GitHub...');
     const branch = getCurrentBranch();
