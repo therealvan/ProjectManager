@@ -166,4 +166,81 @@ function fetchRepo() {
     }
 }
 
-module.exports = { cloneOrUpdateRepo, listLocalFiles, addFiles, commitChanges, pushChanges, pullChanges, createBranch, createRelease, checkoutBranch, mergeBranch, deleteBranch, status, fetchRepo };
+function stashChanges() {
+    try {
+        execSync('git stash', { stdio: 'inherit' });
+        console.log('Changements stashés avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du stash : " + error.message);
+        throw error;
+    }
+}
+
+function applyStash(index = 0) {
+    try {
+        execSync(`git stash apply stash{${index}}`, { stdio: 'inherit' });
+        console.log('Stash ${index} appliqué avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de l’application du stash : " + error.message);
+        throw error;
+    }
+}
+
+function resetChanges(hard = false) {
+    try {
+        const mode = hard ? '--hard' : '--soft';
+        execSync(`git reset ${mode}`, { stdio: 'inherit' });
+        console.log('Reset des changements effectué avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du reset : " + error.message);
+        throw error;
+    }
+}
+
+function logCommits(limit = 10) {
+    try {
+        const logOutput = execSync(`git log -n ${limit} --oneline`, { encoding: 'utf8' });
+        console.log('Historique des commits :', logOutput);
+        return logOutput;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la récupération des logs : " + error.message);
+        throw error;
+    }
+}
+
+function diffChanges() {
+    try {
+        const diffOutput = execSync('git diff', { encoding: 'utf8' });
+        console.log('Différences :', diffOutput);
+        return diffOutput;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la récupération des différences : " + error.message);
+        throw error;
+    }
+}
+
+module.exports = { 
+    cloneOrUpdateRepo, 
+    listLocalFiles, 
+    addFiles, 
+    commitChanges, 
+    pushChanges, 
+    pullChanges, 
+    createBranch, 
+    createRelease, 
+    checkoutBranch, 
+    mergeBranch, 
+    deleteBranch, 
+    status, 
+    fetchRepo, 
+    stashChanges, 
+    applyStash, 
+    resetChanges, 
+    logCommits, 
+    diffChanges 
+};
