@@ -1,5 +1,3 @@
-├── Arborescence.grok
-├── Arborescence.js
 ├── Instruction/
 │   ├── Instruction.txt
 │   ├── Instruction2.txt
@@ -8,6 +6,8 @@
 │   └── GitHub/
 │       ├── DiagGitHub.js
 │       └── GitHub.js
+├── Arborescence.grok
+├── Arborescence.js
 ├── StartProject.js
 ├── UpdateProject.js
 └── V.1.0.0
