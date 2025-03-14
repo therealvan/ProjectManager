@@ -4,7 +4,8 @@ const path = require('path');
 
 function scanDirectory(dir, prefix = '') {
     let result = '';
-    const files = fs.readdirSync(dir, { withFileTypes: true });
+    const files = fs.readdirSync(dir, { withFileTypes: true })
+        .filter(file => !file.name.startsWith('.')); // Ignore les fichiers/dossiers commençant par "."
     files.forEach((file, index) => {
         const isLast = index === files.length - 1;
         const filePath = path.join(dir, file.name);
