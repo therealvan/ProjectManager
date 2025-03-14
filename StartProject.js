@@ -163,6 +163,17 @@ async function startProject() {
     }
 
     console.log('Terminé !');
+
+    // Étape finale : Récupère la branche active et l'écrit dans Branche.git
+    try {
+        console.log('Récupération de la branche active...');
+        const branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+        fs.writeFileSync('Branche.git', branch);
+        console.log('Branche active (' + branch + ') écrite dans Branche.git.');
+    } catch (error) {
+        console.error('Erreur lors de la récupération de la branche :', error.message);
+    }
+    
 }
 
 // Exécute la fonction principale
