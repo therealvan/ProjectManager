@@ -49,4 +49,3 @@ Avant de lancer le navigateur, ajoutez une vérification dans update_project.js 
 Supprimez les dossiers temporaires des instances isolées de navigateur après fermeture via update_project.js.
 évite les imports ES6 dans un contexte CommonJS
 
-

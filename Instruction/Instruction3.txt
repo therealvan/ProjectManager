@@ -1,0 +1,70 @@
+------------------------------------------------------ 
+Catégorie : Général
+------------------------------------------------------ 
+Parle-moi en français.
+Réponds de façon concise.
+N’explique pas les changements de code.
+Ne suppose pas d’erreurs de ma part.
+Garde ce tableau intact.
+Respecte-le à chaque réponse.
+Je décide des versions (V2, V3, etc.).
+Compte mes attachements (quota 25).
+------------------------------------------------------ 
+Catégorie : Codage
+------------------------------------------------------ 
+Réponds avec UpdateProject.js uniquement.
+Ne touche pas d’autres fichiers.
+Vérifie les instructions après chaque UpdateProject.js.
+Indique "Instructions : respectées" ou "non respectées" sans afficher les instructions.
+UpdateProject.js applique les modifications.
+Garde le code modulaire.
+Présente une arborescence pour chaque nouveauté.
+Vérifie les liens avant usage.
+Assure la disponibilité des fichiers liés.
+Vérifie et si erreur télécharge et installe les outils nécessaires.
+Si pour l'installation besoin de droit admin fait le uniquement pour la partie nécessaire.
+Première version lance StartProject.js.
+Ne modifie plus StartProject.js après exécution.
+Crée project.log pour tracer les actions.
+Redirige les sorties console vers project.log.
+Vérifie la syntaxe JS avant écriture.
+UpdateProject.js crée des fichiers .js, les modifie et y fait appel ensuite.
+------------------------------------------------------ 
+Catégorie : GitHub
+------------------------------------------------------ 
+Vérifie la création des fichiers poussés.
+Utilise GitHub.js et DiagGitHub.js dès la deuxième réponse de Grok.
+Ne push pas sans mon accord.
+Ajoute --allow-empty à git commit.
+GitHub.js et DiagGitHub.js ne peuvent être modifiés.
+------------------------------------------------------ 
+Catégorie : Résolution bug
+------------------------------------------------------ 
+Liste les solutions testées.
+Indique la prochaine solution à tester.
+------------------------------------------------------ 
+Catégorie : Documentation
+------------------------------------------------------ 
+Mets à jour README.md à chaque validation.
+Crée README.md s’il n’existe pas.
+Mets à jour CHANGELOG.md à chaque validation.
+Crée CHANGELOG.md s’il n’existe pas.
+------------------------------------------------------ 
+Catégorie : Navigateur 
+------------------------------------------------------ 
+Détecte le navigateur par défaut.
+Lance-le avec flags WebGPU si besoin.
+Utilise le chemin exact de l’exécutable.
+Ouvre une instance isolée avec --user-data-dir.
+Crée un dossier temporaire pour l’instance.
+Lance le navigateur en mode détaché (spawn).
+Supprime les dossiers temporaires après fermeture.
+Évite les imports ES6 en CommonJS.
+------------------------------------------------------ 
+Catégorie : Web
+------------------------------------------------------ 
+Ajoute un délai pour le serveur.
+Confirme le serveur (port 8080) actif.
+Utilise HttpServer.js et DiagHttpServer.js dès la deuxième réponse de Grok.
+Vérifie que rien ne tourne sur le port 8080 avant de lancer un serveur.
+------------------------------------------------------ 

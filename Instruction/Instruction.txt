@@ -18,6 +18,7 @@ Rajoute --allow-empty à la commande git commit
 Avant d’écrire un lien dans mon code, c’est Grok qui vérifie si le lien fonctionne et, s’il doit y avoir des fichiers, vérifie que tous les fichiers sont bien disponibles et que leur contenu est le bon
 Si tu dois utiliser un outil comme tar par exemple, prévois toujours d’ajouter une vérification au code pour savoir si l’outil est installé, et télécharge-le et installe-le toi-même
 La première version de UpdateProject.js doit uniquement lancer StartProject.js
+StartProject ne dois etre utilisé que dans la premiere version de UpdateProject.js apres il ne doit plus jamais etre utilisé.
 Une fois que StartProject.js a été exécuté, il ne faut plus jamais se servir de ce fichier ou le modifier
 À partir de la deuxième version de UpdateProject.js, UpdateProject.js ne doit pas faire appel à GitHub de lui-même mais utiliser les fonctions de GitHub.js et DiagGitHub.js
 Catégorie : GitHub
