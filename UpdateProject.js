@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 function updateProject() {
     console.log('Lancement de UpdateProject.js...');
@@ -271,24 +272,23 @@ module.exports = {
     fs.writeFileSync('./src/GitHub/GitHub.js', gitHubContent);
     console.log('GitHub.js mis à jour avec getCurrentBranch utilisant uniquement Branche.git.');
 
-    // Vider le cache du module GitHub.js
-    delete require.cache[require.resolve('./src/GitHub/GitHub.js')];
-    console.log('Cache de GitHub.js vidé.');
-
-    // Chargement du module mis à jour
-    const { getCurrentBranch, addFiles, commitChanges, pushChanges } = require('./src/GitHub/GitHub.js');
-
+    // Ajouter, committer et pousser avec les commandes Git directement
     console.log('Ajout des fichiers locaux...');
-    addFiles('.');
+    execSync('git add .', { stdio: 'inherit' });
     
     console.log('Création du commit...');
-    commitChanges('Mise à jour de GitHub.js avec cache vidé');
+    execSync('git commit -m "Mise à jour de GitHub.js avec toutes les fonctionnalités" --allow-empty', { stdio: 'inherit' });
     
-    console.log('Push vers GitHub...');
-    const branch = getCurrentBranch();
-    pushChanges(branch);
-    
-    console.log('UpdateProject.js terminé.');
+    console.log('Redémarrage pour appliquer les modifications...');
+    // Redémarrer le script après avoir écrit le fichier
+    fs.writeFileSync('restart.js', `
+        const { execSync } = require('child_process');
+        console.log('Push vers GitHub après redémarrage...');
+        execSync('git push origin V1.0.0', { stdio: 'inherit' });
+        console.log('UpdateProject.js terminé après redémarrage.');
+    `);
+    execSync('node restart.js', { stdio: 'inherit' });
+    fs.unlinkSync('restart.js'); // Nettoyer le fichier temporaire
     
     // Restauration de la console
     logStream.end();
