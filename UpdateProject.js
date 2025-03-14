@@ -3,31 +3,42 @@ const fs = require('fs');
 const path = require('path');
 
 function updateProject() {
-    console.log('Mise à jour du projet...');
+    console.log('Mise à jour du projet via UpdateProject.js...');
     
-    // Ajoute tous les fichiers
-    execSync('git add .', { stdio: 'inherit' });
+    // Chemin vers Fonctions.js
+    const fonctionsPath = path.join(__dirname, 'Fonctions.js');
     
-    // Commit avec --allow-empty
-    execSync('git commit -m "Mise à jour du projet" --allow-empty', { stdio: 'inherit' });
+    // Nouveau contenu pour Fonctions.js (inchangé)
+    const newFonctionsContent = `
+function main() {
+    console.log('Fonctions.js exécuté avec succès');
+}
+
+module.exports = { main };
+    `;
     
-    // Push vers le dépôt
-    execSync('git push', { stdio: 'inherit' });
+    // Écriture du nouveau contenu dans Fonctions.js
+    fs.writeFileSync(fonctionsPath, newFonctionsContent.trim());
+    console.log('Fonctions.js modifié avec succès');
     
-    // Vérifie si le fichier UpdateProject.js existe dans le dépôt
-    const repoDir = path.join(__dirname, '.git');
-    if (fs.existsSync(repoDir)) {
-        const files = execSync('git ls-files', { encoding: 'utf-8' });
-        if (files.includes('UpdateProject.js')) {
-            console.log('Vérification : UpdateProject.js bien poussé dans le dépôt.');
+    // Gestion Git pour pousser les modifications
+    try {
+        console.log('Préparation du push vers Git...');
+        execSync('git add .', { stdio: 'inherit' });
+        execSync('git commit -m "Modification de Fonctions.js via UpdateProject.js" --allow-empty', { stdio: 'inherit' });
+        execSync('git push', { stdio: 'inherit' });
+        console.log('Code poussé avec succès vers le dépôt Git.');
+        
+        // Vérification que le fichier est bien dans le dépôt
+        const gitLsFiles = execSync('git ls-files', { encoding: 'utf8' });
+        if (gitLsFiles.includes('Fonctions.js')) {
+            console.log('Vérification : Fonctions.js bien présent dans le dépôt.');
         } else {
-            console.error('Erreur : UpdateProject.js n’a pas été trouvé dans le dépôt.');
+            console.error('Erreur : Fonctions.js non détecté dans le dépôt.');
         }
-    } else {
-        console.error('Erreur : Dépôt Git non trouvé.');
+    } catch (error) {
+        console.error('Erreur lors du push Git :', error.message);
     }
-    
-    console.log('Projet mis à jour avec succès !');
 }
 
 updateProject();
