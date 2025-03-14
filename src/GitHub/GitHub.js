@@ -2,14 +2,10 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 
 function getCurrentBranch() {
-    try {
-        if (fs.existsSync('Branche.git')) {
-            return fs.readFileSync('Branche.git', 'utf8').trim();
-        }
-        return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
-    } catch (error) {
-        console.error('Erreur lors de la récupération de la branche :', error.message);
-        return 'V1.0.0'; // Branche par défaut
+    if (fs.existsSync('Branche.git')) {
+        return fs.readFileSync('Branche.git', 'utf8').trim();
+    } else {
+        throw new Error('Fichier Branche.git introuvable');
     }
 }
 

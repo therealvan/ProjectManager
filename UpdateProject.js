@@ -11,19 +11,15 @@ function updateProject() {
         originalConsoleLog(...args);
     };
 
-    // Mise à jour de GitHub.js si nécessaire
+    // Contenu corrigé de GitHub.js
     const gitHubContent = `const { execSync } = require('child_process');
 const fs = require('fs');
 
 function getCurrentBranch() {
-    try {
-        if (fs.existsSync('Branche.git')) {
-            return fs.readFileSync('Branche.git', 'utf8').trim();
-        }
-        return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
-    } catch (error) {
-        console.error('Erreur lors de la récupération de la branche :', error.message);
-        return 'V1.0.0'; // Branche par défaut
+    if (fs.existsSync('Branche.git')) {
+        return fs.readFileSync('Branche.git', 'utf8').trim();
+    } else {
+        throw new Error('Fichier Branche.git introuvable');
     }
 }
 
@@ -46,7 +42,7 @@ module.exports = { getCurrentBranch, addFiles, commitChanges, pushChanges };
 `;
 
     fs.writeFileSync('./src/GitHub/GitHub.js', gitHubContent);
-    console.log('GitHub.js mis à jour avec toutes les fonctions nécessaires.');
+    console.log('GitHub.js mis à jour pour utiliser uniquement Branche.git.');
 
     // Chargement du module mis à jour
     const { getCurrentBranch, addFiles, commitChanges, pushChanges } = require('./src/GitHub/GitHub.js');
@@ -55,7 +51,7 @@ module.exports = { getCurrentBranch, addFiles, commitChanges, pushChanges };
     addFiles(['.']);
     
     console.log('Création du commit...');
-    commitChanges('Push local vers GitHub avec GitHub.js corrigé');
+    commitChanges('Mise à jour de GitHub.js pour Branche.git');
     
     console.log('Push vers GitHub...');
     const branch = getCurrentBranch();
