@@ -1,4 +1,4 @@
-const { getCurrentBranch, addFiles, commitChanges, pushChanges } = require('./src/GitHub/GitHub.js');
+const { addFiles, commitChanges, pushChanges } = require('./src/GitHub/GitHub.js');
 const fs = require('fs');
 
 function updateProject() {
@@ -19,7 +19,7 @@ function updateProject() {
     commitChanges('Mise à jour depuis UpdateProject.js');
     
     console.log('Push vers GitHub...');
-    const branch = getCurrentBranch();
+    const branch = fs.existsSync('Branche.git') ? fs.readFileSync('Branche.git', 'utf8').trim() : 'V1.0.0';
     pushChanges(branch);
     
     console.log('UpdateProject.js terminé.');
