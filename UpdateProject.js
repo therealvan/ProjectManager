@@ -12,8 +12,8 @@ function updateProject() {
         console.log('Création d’un commit...');
         execSync('git commit -m "Mise à jour du projet local" --allow-empty', { cwd: PROJECT_DIR, stdio: 'inherit' });
 
-        console.log('Poussée des modifications vers le dépôt distant...');
-        execSync('git push origin V1.0.0', { cwd: PROJECT_DIR, stdio: 'inherit' });
+        console.log('Poussée forcée des modifications vers le dépôt distant...');
+        execSync('git push origin V1.0.0 --force', { cwd: PROJECT_DIR, stdio: 'inherit' });
 
         console.log('Vérification du fichier dans le dépôt...');
         const files = execSync('git ls-tree -r V1.0.0 --name-only', { cwd: PROJECT_DIR }).toString().split('\n');
