@@ -281,14 +281,14 @@ module.exports = {
     execSync('git commit -m "Correction de GitHub.js via UpdateProject.js" --allow-empty', { stdio: 'inherit' });
     
     console.log('Redémarrage pour appliquer les modifications...');
-    // Créer un script temporaire pour terminer le push
+    // Créer un script temporaire pour terminer le push avec une syntaxe correcte
     fs.writeFileSync('restart.js', `
         const { execSync } = require('child_process');
         const fs = require('fs');
         const logStream = fs.createWriteStream('project.log', { flags: 'a' });
         const originalConsoleLog = console.log;
         console.log = (...args) => {
-            logStream.write(args.join(' ') + '\n');
+            logStream.write(args.join(' ') + '\\n');
             originalConsoleLog(...args);
         };
         console.log('Push vers GitHub après redémarrage...');
