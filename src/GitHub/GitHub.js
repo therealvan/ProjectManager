@@ -35,4 +35,37 @@ function listLocalFiles() {
     }
 }
 
-module.exports = { cloneOrUpdateRepo, listLocalFiles };
+function addFiles(pattern) {
+    try {
+        execSync(`git add ${pattern}`, { stdio: 'inherit' });
+        console.log('Fichiers ajoutés à l’index.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de l’ajout des fichiers : " + error.message);
+        throw error;
+    }
+}
+
+function commitChanges(message) {
+    try {
+        execSync(`git commit -m "${message}" --allow-empty`, { stdio: 'inherit' });
+        console.log('Commit créé avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du commit : " + error.message);
+        throw error;
+    }
+}
+
+function pushChanges(branch) {
+    try {
+        execSync(`git push origin ${branch}`, { stdio: 'inherit' });
+        console.log('Modifications poussées avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du push : " + error.message);
+        throw error;
+    }
+}
+
+module.exports = { cloneOrUpdateRepo, listLocalFiles, addFiles, commitChanges, pushChanges };
