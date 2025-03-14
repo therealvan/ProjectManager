@@ -145,6 +145,23 @@ async function startProject() {
     }
     console.log('-------------');
 
+    // Ajout demandé : Exécute Fonctions.js et Arborescence.js à la fin
+    try {
+        console.log('Exécution de Fonctions.js...');
+        const fonctions = require(path.join(PROJECT_DIR, 'Fonctions.js'));
+        fonctions.main(); // Suppose une fonction main dans Fonctions.js
+    } catch (error) {
+        console.error('Erreur lors de l’exécution de Fonctions.js :', error.message);
+    }
+
+    try {
+        console.log('Lancement final de Arborescence.js...');
+        const arborescence = require(path.join(PROJECT_DIR, 'Arborescence.js'));
+        arborescence.generateArborescence();
+    } catch (error) {
+        console.error('Erreur lors de l’exécution finale de Arborescence.js :', error.message);
+    }
+
     console.log('Terminé !');
 }
 

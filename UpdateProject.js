@@ -27,7 +27,7 @@ function updateProject() {
         console.error('Erreur : Dépôt Git non trouvé.');
     }
     
-    console.log('Projet mis à jour et poussé avec succès !');
+    console.log('Projet mis à jour avec succès !');
 }
 
 updateProject();
