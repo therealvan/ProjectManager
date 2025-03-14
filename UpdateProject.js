@@ -1,26 +1,30 @@
 const { execSync } = require('child_process');
-const fs = require('fs');
+const path = require('path');
 
-// Structure modulaire
-const project = {
-    pushLocal: () => {
-        try {
-            console.log('Ajout des fichiers locaux à Git...');
-            execSync('git add .', { stdio: 'inherit' });
-            console.log('Fichiers ajoutés avec succès.');
+function updateProject() {
+    console.log('Lancement de UpdateProject.js...');
+    const PROJECT_DIR = path.join(__dirname);
 
-            console.log('Création du commit...');
-            execSync('git commit -m "Push du code local" --allow-empty', { stdio: 'inherit' });
-            console.log('Commit créé avec succès.');
+    try {
+        console.log('Ajout des fichiers locaux au suivi Git...');
+        execSync('git add .', { cwd: PROJECT_DIR, stdio: 'inherit' });
 
-            console.log('Pousse des modifications vers le dépôt distant...');
-            execSync('git push origin V1.0.0', { stdio: 'inherit' });
-            console.log('Code local poussé avec succès');
-        } catch (error) {
-            console.error('Erreur lors du push du code local :', error.message);
-        }
+        console.log('Création d’un commit...');
+        execSync('git commit -m "Mise à jour du projet local" --allow-empty', { cwd: PROJECT_DIR, stdio: 'inherit' });
+
+        console.log('Poussée des modifications vers le dépôt distant...');
+        execSync('git push origin V1.0.0', { cwd: PROJECT_DIR, stdio: 'inherit' });
+
+        console.log('Vérification du fichier dans le dépôt...');
+        const files = execSync('git ls-tree -r V1.0.0 --name-only', { cwd: PROJECT_DIR }).toString().split('\n');
+        console.log('Fichiers présents dans le dépôt :', files);
+
+        console.log('UpdateProject.js terminé.');
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour du projet :', error.message);
     }
-};
+}
 
-// Exécution
-project.pushLocal();
+updateProject();
+
+module.exports = { updateProject };
