@@ -68,4 +68,179 @@ function pushChanges(branch) {
     }
 }
 
-module.exports = { cloneOrUpdateRepo, listLocalFiles, addFiles, commitChanges, pushChanges };
+function pullChanges(branch) {
+    try {
+        execSync(`git pull origin ${branch}`, { stdio: 'inherit' });
+        console.log('Modifications tirées avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du pull : " + error.message);
+        throw error;
+    }
+}
+
+function createBranch(branchName) {
+    try {
+        execSync(`git checkout -b ${branchName}`, { stdio: 'inherit' });
+        execSync(`git push origin ${branchName}`, { stdio: 'inherit' });
+        console.log('Branche ${branchName} créée et poussée avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la création de la branche : " + error.message);
+        throw error;
+    }
+}
+
+function createRelease(version, message) {
+    try {
+        execSync(`git tag ${version}`, { stdio: 'inherit' });
+        execSync(`git push origin ${version}`, { stdio: 'inherit' });
+        console.log('Release ${version} créée avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la création de la release : " + error.message);
+        throw error;
+    }
+}
+
+function checkoutBranch(branch) {
+    try {
+        execSync(`git checkout ${branch}`, { stdio: 'inherit' });
+        console.log('Branche ${branch} checkout avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du checkout : " + error.message);
+        throw error;
+    }
+}
+
+function mergeBranch(sourceBranch, targetBranch) {
+    try {
+        execSync(`git checkout ${targetBranch}`, { stdio: 'inherit' });
+        execSync(`git merge ${sourceBranch}`, { stdio: 'inherit' });
+        execSync(`git push origin ${targetBranch}`, { stdio: 'inherit' });
+        console.log('Fusion de ${sourceBranch} dans ${targetBranch} réussie.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la fusion : " + error.message);
+        throw error;
+    }
+}
+
+function deleteBranch(branch, remote = false) {
+    try {
+        if (remote) {
+            execSync(`git push origin --delete ${branch}`, { stdio: 'inherit' });
+            console.log('Branche distante ${branch} supprimée.');
+        } else {
+            execSync(`git branch -D ${branch}`, { stdio: 'inherit' });
+            console.log('Branche locale ${branch} supprimée.');
+        }
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la suppression de la branche : " + error.message);
+        throw error;
+    }
+}
+
+function status() {
+    try {
+        const statusOutput = execSync('git status', { encoding: 'utf8' });
+        console.log('État du dépôt :', statusOutput);
+        return statusOutput;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la vérification de l’état : " + error.message);
+        throw error;
+    }
+}
+
+function fetchRepo() {
+    try {
+        execSync('git fetch origin', { stdio: 'inherit' });
+        console.log('Dépôt fetch avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du fetch : " + error.message);
+        throw error;
+    }
+}
+
+function stashChanges() {
+    try {
+        execSync('git stash', { stdio: 'inherit' });
+        console.log('Changements stashés avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du stash : " + error.message);
+        throw error;
+    }
+}
+
+function applyStash(index = 0) {
+    try {
+        execSync(`git stash apply stash{${index}}`, { stdio: 'inherit' });
+        console.log('Stash ${index} appliqué avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de l’application du stash : " + error.message);
+        throw error;
+    }
+}
+
+function resetChanges(hard = false) {
+    try {
+        const mode = hard ? '--hard' : '--soft';
+        execSync(`git reset ${mode}`, { stdio: 'inherit' });
+        console.log('Reset des changements effectué avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du reset : " + error.message);
+        throw error;
+    }
+}
+
+function logCommits(limit = 10) {
+    try {
+        const logOutput = execSync(`git log -n ${limit} --oneline`, { encoding: 'utf8' });
+        console.log('Historique des commits :', logOutput);
+        return logOutput;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la récupération des logs : " + error.message);
+        throw error;
+    }
+}
+
+function diffChanges() {
+    try {
+        const diffOutput = execSync('git diff', { encoding: 'utf8' });
+        console.log('Différences :', diffOutput);
+        return diffOutput;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la récupération des différences : " + error.message);
+        throw error;
+    }
+}
+
+module.exports = { 
+    cloneOrUpdateRepo, 
+    listLocalFiles, 
+    addFiles, 
+    commitChanges, 
+    pushChanges, 
+    pullChanges, 
+    createBranch, 
+    createRelease, 
+    checkoutBranch, 
+    mergeBranch, 
+    deleteBranch, 
+    status, 
+    fetchRepo, 
+    stashChanges, 
+    applyStash, 
+    resetChanges, 
+    logCommits, 
+    diffChanges 
+};
