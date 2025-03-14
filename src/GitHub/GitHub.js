@@ -233,6 +233,7 @@ function diffChanges() {
 }
 
 module.exports = { 
+    getCurrentBranch,
     cloneOrUpdateRepo, 
     listLocalFiles, 
     addFiles, 
