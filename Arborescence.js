@@ -5,7 +5,13 @@ const path = require('path');
 function scanDirectory(dir, prefix = '') {
     let result = '';
     const files = fs.readdirSync(dir, { withFileTypes: true })
-        .filter(file => !file.name.startsWith('.')); // Ignore les fichiers/dossiers commençant par "."
+        .filter(file => !file.name.startsWith('.')) // Ignore les fichiers/dossiers commençant par "."
+        .sort((a, b) => {
+            // Trie pour mettre les dossiers en premier
+            if (a.isDirectory() && !b.isDirectory()) return -1;
+            if (!a.isDirectory() && b.isDirectory()) return 1;
+            return a.name.localeCompare(b.name); // Trie alphabétiquement si même type
+        });
     files.forEach((file, index) => {
         const isLast = index === files.length - 1;
         const filePath = path.join(dir, file.name);
