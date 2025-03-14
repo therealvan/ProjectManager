@@ -11,9 +11,9 @@ function updateProject() {
     commitChanges('Mise à jour depuis UpdateProject.js');
     console.log('Changements commités.');
     
-    // Pousse vers le dépôt distant
-    pushChanges();
-    console.log('Changements poussés vers GitHub.');
+    // Pousse vers la branche V1.0.0
+    pushChanges('V1.0.0');
+    console.log('Changements poussés vers GitHub sur la branche V1.0.0.');
     
     console.log('UpdateProject.js terminé.');
 }
