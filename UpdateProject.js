@@ -3,26 +3,37 @@ const path = require('path');
 
 function updateProject() {
     console.log('Lancement de UpdateProject.js...');
-    const PROJECT_DIR = path.join(__dirname);
+    console.log('-------------');
 
     try {
-        console.log('Ajout des fichiers locaux au suivi Git...');
-        execSync('git add .', { cwd: PROJECT_DIR, stdio: 'inherit' });
-
-        console.log('Création d’un commit...');
-        execSync('git commit -m "Mise à jour du code local" --allow-empty', { cwd: PROJECT_DIR, stdio: 'inherit' });
-
-        console.log('Poussée forcée des modifications vers le dépôt distant...');
-        execSync('git push origin V1.0.0 --force', { cwd: PROJECT_DIR, stdio: 'inherit' });
-
-        console.log('Vérification du fichier dans le dépôt...');
-        const files = execSync('git ls-tree -r V1.0.0 --name-only', { cwd: PROJECT_DIR }).toString().split('\n');
-        console.log('Fichiers présents dans le dépôt :', files);
-
-        console.log('UpdateProject.js terminé.');
+        console.log('Ajout des modifications locales...');
+        execSync('git add .', { stdio: 'inherit' });
+        console.log('Modifications ajoutées.');
     } catch (error) {
-        console.error('Erreur lors de la mise à jour du projet :', error.message);
+        console.error('Erreur lors de l’ajout des modifications :', error.message);
+        return;
     }
+
+    try {
+        console.log('Création d’un commit...');
+        execSync('git commit -m "Mise à jour du projet" --allow-empty', { stdio: 'inherit' });
+        console.log('Commit créé avec succès.');
+    } catch (error) {
+        console.error('Erreur lors de la création du commit :', error.message);
+        return;
+    }
+
+    try {
+        console.log('Poussée des modifications vers le dépôt distant...');
+        execSync('git push origin V1.0.0', { stdio: 'inherit' });
+        console.log('Modifications poussées avec succès.');
+    } catch (error) {
+        console.error('Erreur lors de la poussée vers le dépôt :', error.message);
+        return;
+    }
+
+    console.log('-------------');
+    console.log('Mise à jour et poussée terminées !');
 }
 
 updateProject();
