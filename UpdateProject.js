@@ -1,19 +1,33 @@
+const { execSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
-const { addFiles, commitChanges, pushChanges } = require(path.join(__dirname, 'src/GitHub/GitHub.js'));
 
-// Fonction principale pour mettre à jour le projet
 function updateProject() {
-    // Ajoute tous les fichiers locaux
-    addFiles('.');
+    console.log('Mise à jour du projet...');
     
-    // Crée un commit avec --allow-empty
-    commitChanges('Push du dépôt local', true);
+    // Ajoute tous les fichiers
+    execSync('git add .', { stdio: 'inherit' });
     
-    // Pousse les modifications vers le dépôt distant
-    pushChanges();
+    // Commit avec --allow-empty
+    execSync('git commit -m "Mise à jour du projet" --allow-empty', { stdio: 'inherit' });
     
-    console.log('Dépôt local poussé avec succès.');
+    // Push vers le dépôt
+    execSync('git push', { stdio: 'inherit' });
+    
+    // Vérifie si le fichier UpdateProject.js existe dans le dépôt
+    const repoDir = path.join(__dirname, '.git');
+    if (fs.existsSync(repoDir)) {
+        const files = execSync('git ls-files', { encoding: 'utf-8' });
+        if (files.includes('UpdateProject.js')) {
+            console.log('Vérification : UpdateProject.js bien poussé dans le dépôt.');
+        } else {
+            console.error('Erreur : UpdateProject.js n’a pas été trouvé dans le dépôt.');
+        }
+    } else {
+        console.error('Erreur : Dépôt Git non trouvé.');
+    }
+    
+    console.log('Projet mis à jour et poussé avec succès !');
 }
 
-// Exécute la mise à jour
 updateProject();
