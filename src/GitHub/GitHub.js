@@ -41,6 +41,7 @@ function commitChanges(message) {
 function pushChanges() {
     const branch = getCurrentBranch();
     try {
+        // Call Readme.js to update README.md before pushing
         const { updateReadme } = require(path.join(__dirname, '..', '..', 'Readme.js'));
         updateReadme();
         
@@ -83,19 +84,15 @@ function createRelease(version) {
 
 function checkoutBranch(branchName) {
     try {
-        // Check for local changes
         const status = execSync('git status --porcelain', { encoding: 'utf8' });
         if (status.trim().length > 0) {
-            // Discard all local changes (staged and unstaged)
             execSync('git reset --hard', { stdio: 'inherit' });
             execSync('git clean -fd', { stdio: 'inherit' });
             console.log('All local uncommitted changes discarded.');
         }
-        // Fetch latest from remote and checkout branch
         execSync('git fetch origin', { stdio: 'inherit' });
         execSync(`git checkout ${branchName}`, { stdio: 'inherit' });
         console.log(`Switched to branch ${branchName}`);
-        // Update Branche.git
         fs.writeFileSync(path.join(__dirname, '..', '..', 'Branche.git'), branchName);
     } catch (error) {
         console.error(`Error switching to branch ${branchName}: ${error.message}`);

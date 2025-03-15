@@ -150,8 +150,6 @@ function startHttpServer() {
     installNode();
     const serverPath = installHttpServer();
     const { keyPath, certPath } = generateSelfSignedCert();
-    const tempDir = path.join(os.tmpdir(), `projectmanager-${Date.now()}`);
-    fs.mkdirSync(tempDir, { recursive: true });
     const faviconPath = path.join(PROJECT_DIR, 'favicon.ico');
     if (!fs.existsSync(faviconPath)) {
         fs.writeFileSync(faviconPath, '');
@@ -178,8 +176,8 @@ function startHttpServer() {
         diagHttp.log('Serveur HTTPS démarré avec succès.');
 
         const browserPath = getDefaultBrowserWin11();
-        const browserArgs = ['--user-data-dir=' + tempDir, '--enable-webgpu', 'https://localhost:8080'];
-        diagHttp.log('Lancement du navigateur...');
+        const browserArgs = ['https://localhost:8080']; // Use default profile
+        diagHttp.log('Lancement du navigateur avec le profil par défaut...');
         const browserProcess = spawn(`"${browserPath}"`, browserArgs, { shell: true, detached: false, stdio: 'inherit' });
         browserProcess.on('error', (err) => {
             debug.log(`Erreur lors du lancement du navigateur : ${err.message}`);

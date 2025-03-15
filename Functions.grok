@@ -57,5 +57,4 @@ src\Tools\StartHttpServer.js: generateSelfSignedCert
 src\Tools\StartHttpServer.js: installHttpServer
 src\Tools\StartHttpServer.js: isServerRunning
 src\Tools\StartHttpServer.js: getDefaultBrowserWin11
-src\Tools\StartHttpServer.js: cleanTempDir
 src\Tools\StartHttpServer.js: startHttpServer
