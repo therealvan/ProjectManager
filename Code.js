@@ -22,14 +22,14 @@ function writeCodeGrok() {
 
     for (const file of jsFiles) {
         const content = fs.readFileSync(file, 'utf8');
-        codeContent += `// Contenu de ${path.relative(projectDir, file)}
+        codeContent += `// Content of ${path.relative(projectDir, file)}
 ${content}
 
 `;
     }
 
     fs.writeFileSync(path.join(projectDir, 'code.grok'), codeContent);
-    console.log('code.grok créé avec succès.');
+    console.log('code.grok created successfully.');
 }
 
 writeCodeGrok();

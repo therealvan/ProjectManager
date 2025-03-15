@@ -3,45 +3,45 @@
 # ProjectManager
 
 ## Description
-ProjectManager est un outil de gestion de projet automatisé utilisant Node.js et Git. Il permet d'initialiser, mettre à jour et gérer un dépôt GitHub, de générer une arborescence de fichiers, de lister les fonctions des fichiers JS, et de regrouper le code dans un fichier exploitable.
+ProjectManager is an automated project management tool using Node.js and Git. It allows initializing, updating, and managing a GitHub repository, generating a file tree, listing functions in JS files, and consolidating code into an exploitable file.
 
-## Prérequis
-- Node.js installé
-- Git installé et configuré
-- Accès au dépôt GitHub : [https://github.com/therealvan/ProjectManager](https://github.com/therealvan/ProjectManager)
+## Prerequisites
+- Node.js installed
+- Git installed and configured
+- Access to the GitHub repository: [https://github.com/therealvan/ProjectManager](https://github.com/therealvan/ProjectManager)
 
-## Structure du projet
+## Project Structure
 ```
 ├── src/
 │   └── GitHub/
-│       ├── DiagGitHub.js  # Logs d'erreurs
-│       └── GitHub.js      # Fonctions Git
-├── Arborescence.js        # Génère l'arborescence
-├── Code.js                # Regroupe le code JS
-├── Fonctions.js           # Liste les fonctions
-├── Readme.js              # Met à jour ce README
-├── StartProject.js        # Initialise le projet
-├── UpdateProject.js       # Met à jour le projet
-├── README.md              # Ce fichier
-├── Branche.git            # Branche active
-└── *.grok                 # Fichiers générés
+│       ├── DiagGitHub.js  # Error logs
+│       └── GitHub.js      # Git functions
+├── Arborescence.js        # Generates the tree
+├── Code.js                # Consolidates JS code
+├── Fonctions.js           # Lists functions
+├── Readme.js              # Updates this README
+├── StartProject.js        # Initializes the project
+├── UpdateProject.js       # Updates the project
+├── README.md              # This file
+├── Branche.git            # Active branch
+└── *.grok                 # Generated files
 ```
 
-## Fonctionnalités
-- Clonage du dépôt depuis GitHub
-- Nettoyage et gestion des fichiers locaux
-- Création et suppression de branches distantes
-- Push forcé priorisant le local
-- Génération d’arborescence et de listes de fonctions
-- Mise à jour automatique du README à chaque push
+## Features
+- Cloning the repository from GitHub
+- Cleaning and managing local files
+- Creating and deleting remote branches
+- Forced push prioritizing local changes
+- Generating tree and function lists
+- Automatic README update on each push
 
 ## Contribution
-1. Forkez le projet
-2. Créez une branche pour vos modifications
-3. Soumettez une pull request
+1. Fork the project
+2. Create a branch for your changes
+3. Submit a pull request
 
-## Dernière mise à jour
-15/03/2025 12:32:51
+## Last Update
+3/15/2025, 12:38:47 PM
 
-## Licence
-Aucune licence spécifiée pour le moment.
+## License
+No license specified at this time.

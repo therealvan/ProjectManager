@@ -1,4 +1,4 @@
 function log(message) {
-    console.error("Erreur détectée : " + message);
+    console.error("Error detected: " + message);
 }
 module.exports = { log };

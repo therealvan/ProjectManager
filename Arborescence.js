@@ -12,7 +12,7 @@ async function scanDirectory(dir, prefix = '', visited = new Set()) {
             .filter(file => !file.name.startsWith('.'))
             .sort((a, b) => {
                 if (a.isDirectory() === b.isDirectory()) {
-                    return a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' });
+                    return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
                 }
                 return a.isDirectory() ? -1 : 1;
             });
@@ -32,34 +32,34 @@ async function scanDirectory(dir, prefix = '', visited = new Set()) {
         }
         return result;
     } catch (error) {
-        console.warn(`Impossible de scanner ${dir}: ${error.message}`);
+        console.warn(`Unable to scan ${dir}: ${error.message}`);
         return '';
     }
 }
 
-async function generateArborescence(outputFile = 'Arborescence.grok') {
+async function generateTree(outputFile = 'Tree.grok') {
     try {
-        const arborescence = await scanDirectory(__dirname);
+        const tree = await scanDirectory(__dirname);
         await fs.writeFile(
             path.join(__dirname, outputFile),
-            arborescence,
+            tree,
             { encoding: 'utf8' }
         );
-        console.log(`Fichier ${outputFile} généré avec succès`);
+        console.log(`File ${outputFile} generated successfully`);
 
-        const { listFunctionsInJsFiles } = require('./Fonctions.js');
+        const { listFunctionsInJsFiles } = require('./Functions.js');
         await listFunctionsInJsFiles();
     } catch (error) {
-        console.error('Erreur lors de la génération :', error.message);
+        console.error('Error during generation:', error.message);
         throw error;
     }
 }
 
 if (require.main === module) {
-    generateArborescence().catch(error => {
-        console.error('Échec de l\'exécution:', error.message);
+    generateTree().catch(error => {
+        console.error('Execution failed:', error.message);
         process.exit(1);
     });
 }
 
-module.exports = { scanDirectory, generateArborescence };
+module.exports = { scanDirectory, generateTree };

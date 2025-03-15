@@ -1,9 +1,9 @@
 const { pushChanges } = require('./src/GitHub/GitHub.js');
 
 function updateProject() {
-    console.log('Lancement de UpdateProject.js...');
+    console.log('Starting UpdateProject.js...');
     pushChanges();
-    console.log('Code local poussé vers le dépôt avec succès.');
+    console.log('Local project successfully pushed to the repository.');
 }
 
 updateProject();

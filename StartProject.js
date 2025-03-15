@@ -10,25 +10,25 @@ function delay(ms) {
 }
 
 async function startProject() {
-    console.log('Démarrage de StartProject.js...');
+    console.log('Starting StartProject.js...');
     console.log('-------------');
 
     try {
-        console.log('Vérification de Git...');
+        console.log('Checking Git...');
         execSync('git --version', { stdio: 'inherit' });
-        console.log('Étape 1 : Git OK.');
+        console.log('Step 1: Git OK.');
     } catch (error) {
-        console.error('Étape 1 : Erreur - Git n’est pas installé ou inaccessible :', error.message);
-        console.log('Veuillez installer Git manuellement ou via npm.');
+        console.error('Step 1: Error - Git is not installed or inaccessible:', error.message);
+        console.log('Please install Git manually or via npm.');
         return;
     }
     console.log('-------------');
 
     try {
-        console.log('Vérification et nettoyage du dossier principal :', PROJECT_DIR);
+        console.log('Checking and cleaning main directory:', PROJECT_DIR);
         if (!fs.existsSync(PROJECT_DIR)) {
             fs.mkdirSync(PROJECT_DIR, { recursive: true });
-            console.log('Dossier ProjectManager créé.');
+            console.log('ProjectManager directory created.');
         }
         const files = fs.readdirSync(PROJECT_DIR);
         for (const file of files) {
@@ -45,7 +45,7 @@ async function startProject() {
                         break;
                     } catch (err) {
                         if (err.code === 'EBUSY') {
-                            console.log(`Fichier ${file} verrouillé, attente 1s...`);
+                            console.log(`File ${file} locked, waiting 1s...`);
                             await delay(1000);
                             retries--;
                             if (retries === 0) throw err;
@@ -56,17 +56,17 @@ async function startProject() {
                 }
             }
         }
-        console.log('Étape 2 : Dossier nettoyé, seuls StartProject.js et UpdateProject.js restent.');
+        console.log('Step 2: Directory cleaned, only StartProject.js and UpdateProject.js remain.');
         process.chdir(PROJECT_DIR);
-        console.log('Répertoire de travail changé à :', process.cwd());
+        console.log('Working directory changed to:', process.cwd());
     } catch (error) {
-        console.error('Étape 2 : Erreur lors du nettoyage ou de la préparation du dossier :', error.message);
+        console.error('Step 2: Error during cleaning or directory preparation:', error.message);
         return;
     }
     console.log('-------------');
 
     try {
-        console.log('Lancement du clonage à la racine...');
+        console.log('Starting cloning to root...');
         const tempDir = path.join(PROJECT_DIR, 'temp_repo');
         if (fs.existsSync(tempDir)) {
             let retries = 3;
@@ -76,7 +76,7 @@ async function startProject() {
                     break;
                 } catch (err) {
                     if (err.code === 'EBUSY') {
-                        console.log('Dossier temp_repo verrouillé, attente 1s...');
+                        console.log('temp_repo directory locked, waiting 1s...');
                         await delay(1000);
                         retries--;
                         if (retries === 0) throw err;
@@ -97,7 +97,7 @@ async function startProject() {
                         break;
                     } catch (err) {
                         if (err.code === 'EBUSY') {
-                            console.log(`Fichier ${file} verrouillé, attente 1s...`);
+                            console.log(`File ${file} locked, waiting 1s...`);
                             await delay(1000);
                             retries--;
                             if (retries === 0) throw err;
@@ -110,68 +110,68 @@ async function startProject() {
         }
         fs.renameSync(path.join(tempDir, '.git'), path.join(PROJECT_DIR, '.git'));
         fs.rmSync(tempDir, { recursive: true, force: true });
-        console.log('Étape 3 : Dépôt cloné avec succès à la racine sur la branche V1.0.0.');
+        console.log('Step 3: Repository successfully cloned to root on branch V1.0.0.');
     } catch (error) {
-        console.error('Étape 3 : Erreur lors du clonage :', error.message);
+        console.error('Step 3: Error during cloning:', error.message);
         return;
     }
     console.log('-------------');
 
     try {
-        console.log('Vérification des fichiers locaux à la racine...');
+        console.log('Checking local files at root...');
         const files = fs.readdirSync('.', { withFileTypes: true });
         const fileList = files.map(item => item.isDirectory() ? item.name + '/' : item.name);
-        console.log('Fichiers locaux après clonage :', fileList);
-        console.log('Étape 4 : Contenu local vérifié.');
+        console.log('Local files after cloning:', fileList);
+        console.log('Step 4: Local content verified.');
     } catch (error) {
-        console.error('Étape 4 : Erreur lors de la vérification :', error.message);
+        console.error('Step 4: Error during verification:', error.message);
         return;
     }
     console.log('-------------');
 
     try {
-        console.log('Lancement de Arborescence.js...');
+        console.log('Launching Arborescence.js...');
         const arborescence = require(path.join(PROJECT_DIR, 'Arborescence.js'));
-        arborescence.generateArborescence();
-        console.log('Étape 5 : Arborescence.js exécuté avec succès.');
+        arborescence.generateTree();
+        console.log('Step 5: Arborescence.js executed successfully.');
     } catch (error) {
-        console.error('Étape 5 : Erreur lors de l’exécution de Arborescence.js :', error.message);
+        console.error('Step 5: Error executing Arborescence.js:', error.message);
     }
     console.log('-------------');
 
     try {
-        console.log('Exécution de Fonctions.js...');
+        console.log('Executing Fonctions.js...');
         const fonctions = require(path.join(PROJECT_DIR, 'Fonctions.js'));
         fonctions.listFunctionsInJsFiles();
     } catch (error) {
-        console.error('Erreur lors de l’exécution de Fonctions.js :', error.message);
+        console.error('Error executing Fonctions.js:', error.message);
     }
 
     try {
-        console.log('Lancement final de Arborescence.js...');
+        console.log('Final launch of Arborescence.js...');
         const arborescence = require(path.join(PROJECT_DIR, 'Arborescence.js'));
-        arborescence.generateArborescence();
+        arborescence.generateTree();
     } catch (error) {
-        console.error('Erreur lors de l’exécution finale de Arborescence.js :', error.message);
+        console.error('Error during final execution of Arborescence.js:', error.message);
     }
 
-    console.log('Terminé !');
+    console.log('Finished!');
 
     try {
-        console.log('Récupération de la branche active...');
+        console.log('Retrieving active branch...');
         const branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
         fs.writeFileSync('Branche.git', branch);
-        console.log('Branche active (' + branch + ') écrite dans Branche.git.');
+        console.log('Active branch (' + branch + ') written to Branche.git.');
     } catch (error) {
-        console.error('Erreur lors de la récupération de la branche :', error.message);
+        console.error('Error retrieving branch:', error.message);
     }
 }
 
 try {
-    console.log('Tentative d’exécution de startProject...');
-    startProject().catch(err => console.error('Erreur globale dans StartProject.js :', err.message));
+    console.log('Attempting to execute startProject...');
+    startProject().catch(err => console.error('Global error in StartProject.js:', err.message));
 } catch (error) {
-    console.error('Erreur globale dans StartProject.js :', error.message);
+    console.error('Global error in StartProject.js:', error.message);
 }
 
 module.exports = { startProject };

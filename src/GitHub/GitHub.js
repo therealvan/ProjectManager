@@ -17,7 +17,7 @@ function getCurrentBranch() {
     try {
         branchName = fs.readFileSync(branchFile, 'utf8').trim();
     } catch (error) {
-        branchName = 'V1.0.0'; // Branche par défaut
+        branchName = 'V1.0.0'; // Default branch
     }
     return branchName;
 }
@@ -41,25 +41,24 @@ function commitChanges(message) {
 function pushChanges() {
     const branch = getCurrentBranch();
     try {
-        // Mise à jour du README avant le push
         const { updateReadme } = require(path.join(__dirname, '..', '..', 'Readme.js'));
         updateReadme();
         
         const status = execSync('git status --porcelain', { encoding: 'utf8' });
         if (status.trim().length === 0) {
-            console.log('Aucune modification locale à pousser.');
+            console.log('No local changes to push.');
             return;
         }
         addFiles('.');
         try {
-            commitChanges('Mise à jour automatique du projet');
+            commitChanges('Automatic project update');
         } catch (commitError) {
-            console.log('Rien de nouveau à committer.');
+            console.log('Nothing new to commit.');
         }
         execSync(`git push origin ${branch} --force`, { stdio: 'inherit' });
-        console.log(`Code local poussé avec succès sur ${branch} (force).`);
+        console.log(`Local code successfully pushed to ${branch} (force).`);
     } catch (error) {
-        console.error('Erreur lors du push :', error.message);
+        console.error('Error during push:', error.message);
     }
 }
 
@@ -72,9 +71,9 @@ function createBranch(branchName) {
     const currentBranch = getCurrentBranch();
     try {
         execSync(`git push origin ${currentBranch}:${branchName}`, { stdio: 'inherit' });
-        console.log(`Branche distante "${branchName}" créée avec succès depuis "${currentBranch}".`);
+        console.log(`Remote branch "${branchName}" successfully created from "${currentBranch}".`);
     } catch (error) {
-        console.error(`Erreur lors de la création de la branche distante "${branchName}" : ${error.message}`);
+        console.error(`Error creating remote branch "${branchName}": ${error.message}`);
     }
 }
 
@@ -93,9 +92,9 @@ function mergeBranch(branchName) {
 function deleteBranch(branchName) {
     try {
         execSync(`git push origin --delete ${branchName}`, { stdio: 'inherit' });
-        console.log(`Branche distante "${branchName}" supprimée avec succès.`);
+        console.log(`Remote branch "${branchName}" successfully deleted.`);
     } catch (error) {
-        console.error(`Erreur lors de la suppression de la branche distante "${branchName}" : ${error.message}`);
+        console.error(`Error deleting remote branch "${branchName}": ${error.message}`);
     }
 }
 

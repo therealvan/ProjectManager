@@ -26,9 +26,9 @@ function listFunctionsInJsFiles() {
 
     try {
         scanDirectory(dir);
-        const outputPath = path.join(__dirname, 'Fonctions.grok');
+        const outputPath = path.join(__dirname, 'Functions.grok');
         fs.writeFileSync(outputPath, functionList.join('\n'), 'utf8');
-        console.log(`Successfully wrote ${functionList.length} functions to Fonctions.grok`);
+        console.log(`Successfully wrote ${functionList.length} functions to Functions.grok`);
         return functionList;
     } catch (error) {
         console.error('Error processing files:', error);
