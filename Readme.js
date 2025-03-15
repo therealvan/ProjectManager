@@ -4,6 +4,15 @@ const path = require('path');
 function updateReadme() {
     console.log('Updating README.md...');
     
+    // Read the project structure from Tree.grok
+    const treeGrokPath = path.join(__dirname, 'Tree.grok');
+    let projectStructure = '';
+    if (fs.existsSync(treeGrokPath)) {
+        projectStructure = fs.readFileSync(treeGrokPath, 'utf8').trim();
+    } else {
+        projectStructure = 'Tree.grok not found. Run ProjectTree.js to generate it.';
+    }
+
     const readmeContent = `![Generated Image](./generated_image.jpg)
 
 # ProjectManager
@@ -19,19 +28,7 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 
 ## Project Structure
 \`\`\`
-├── src/
-│   └── GitHub/
-│       ├── DiagGitHub.js  # Error logs
-│       └── GitHub.js      # Git functions
-├── ProjectTree.js        # Generates the tree
-├── Code.js                # Consolidates JS code
-├── Fonctions.js           # Lists functions
-├── Readme.js              # Updates this README
-├── StartProject.js        # Initializes the project
-├── UpdateProject.js       # Updates the project
-├── README.md              # This file
-├── Branche.git            # Active branch
-└── *.grok                 # Generated files
+${projectStructure}
 \`\`\`
 
 ## Features

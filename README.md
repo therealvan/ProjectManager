@@ -13,19 +13,38 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 
 ## Project Structure
 ```
+├── certs/
+│   ├── server.crt
+│   └── server.key
+├── Instruction/
+│   ├── Instruction.txt
+│   ├── Instruction2.txt
+│   └── Instruction3.txt
 ├── src/
-│   └── GitHub/
-│       ├── DiagGitHub.js  # Error logs
-│       └── GitHub.js      # Git functions
-├── ProjectTree.js        # Generates the tree
-├── Code.js                # Consolidates JS code
-├── Fonctions.js           # Lists functions
-├── Readme.js              # Updates this README
-├── StartProject.js        # Initializes the project
-├── UpdateProject.js       # Updates the project
-├── README.md              # This file
-├── Branche.git            # Active branch
-└── *.grok                 # Generated files
+│   ├── GitHub/
+│   │   ├── DiagGitHub.js
+│   │   └── GitHub.js
+│   └── Tools/
+│       ├── DiagHttpServer.js
+│       ├── HttpServer.js
+│       ├── Privileges.js
+│       └── StartHttpServer.js
+├── Branche.git
+├── code.grok
+├── Code.js
+├── Debug.js
+├── favicon.ico
+├── Functions.grok
+├── Functions.js
+├── generated_image.jpg
+├── httpserver.log
+├── LaunchProject.js
+├── project.log
+├── ProjectTree.js
+├── Readme.js
+├── README.md
+├── Tree.grok
+└── UpdateProject.js
 ```
 
 ## Features
@@ -42,7 +61,7 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 3. Submit a pull request
 
 ## Last Update
-3/15/2025, 4:56:38 PM
+3/15/2025, 5:01:07 PM
 
 ## License
 No license specified at this time.

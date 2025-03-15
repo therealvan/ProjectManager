@@ -13,7 +13,7 @@ function updateProject() {
         originalConsoleLog(...args);
     };
 
-    // Perform the push
+    // Perform the push (includes Readme.js update with Tree.grok)
     pushChanges();
 
     // Restore console and close log stream
