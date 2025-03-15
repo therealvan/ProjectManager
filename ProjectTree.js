@@ -52,8 +52,8 @@ async function generateTree(outputFile = 'Tree.grok') {
 
         // Launch Code.js
         console.log('Executing Code.js...');
-        const code = require(path.join(__dirname, 'Code.js'));
-        code.writeCodeGrok();
+        const { writeCodeGrok } = require(path.join(__dirname, 'Code.js'));
+        writeCodeGrok();
     } catch (error) {
         console.error('Error during generation:', error.message);
         throw error;
