@@ -1,27 +1,17 @@
 // UpdateProject.js
+// Pushes the project code to GitHub using GitHub.js
 const fs = require('fs');
 const path = require('path');
 const { pushChanges } = require('./src/GitHub/GitHub.js');
 
-function updateProject() {
-    // Setup logging to project.log
-    const projectLog = path.join(__dirname, 'project.log');
-    const logStream = fs.createWriteStream(projectLog, { flags: 'a' });
-    const originalConsoleLog = console.log;
-    console.log = (...args) => {
-        logStream.write(args.join(' ') + '\n');
-        originalConsoleLog(...args);
-    };
+// Define project directory
+const PROJECT_DIR = __dirname;
 
-    // Perform the push (includes Readme.js update with Tree.grok)
-    pushChanges();
+// Log to project.log
+const logStream = fs.createWriteStream(path.join(PROJECT_DIR, 'project.log'), { flags: 'a' });
+console.log = (...args) => logStream.write(args.join(' ') + '\n');
 
-    // Restore console and close log stream
-    console.log = originalConsoleLog;
-    logStream.end();
-}
-
-// Run the update
-updateProject();
-
-module.exports = { updateProject };
+// Perform the push
+console.log('Pushing code to GitHub...');
+pushChanges();
+console.log('Push operation initiated.');
