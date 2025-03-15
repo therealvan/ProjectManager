@@ -51,7 +51,13 @@ function pullChanges() {
 }
 
 function createBranch(branchName) {
-    execSync(`git checkout -b ${branchName}`, { stdio: 'inherit' });
+    const currentBranch = getCurrentBranch();
+    try {
+        execSync(`git push origin ${currentBranch}:${branchName}`, { stdio: 'inherit' });
+        console.log(`Branche distante "${branchName}" créée avec succès depuis "${currentBranch}".`);
+    } catch (error) {
+        console.error(`Erreur lors de la création de la branche distante "${branchName}" : ${error.message}`);
+    }
 }
 
 function createRelease(version) {
@@ -66,26 +72,12 @@ function mergeBranch(branchName) {
     execSync(`git merge ${branchName}`, { stdio: 'inherit' });
 }
 
-function deleteBranch(branchName, switchBranch = true) {
-    const currentBranch = getCurrentBranch();
-    if (currentBranch === branchName) {
-        console.log(`Impossible de supprimer la branche active ${branchName}.`);
-        return;
-    }
-    // Vérifie si la branche existe localement
-    const branches = execSync('git branch', { encoding: 'utf8' });
-    if (branches.includes(branchName)) {
-        execSync(`git branch -d ${branchName}`, { stdio: 'inherit' });
-        console.log(`Branche ${branchName} supprimée localement.`);
-    } else {
-        console.log(`Branche ${branchName} non trouvée localement.`);
-    }
-    // Supprime la branche à distance si elle existe
+function deleteBranch(branchName) {
     try {
         execSync(`git push origin --delete ${branchName}`, { stdio: 'inherit' });
-        console.log(`Branche ${branchName} supprimée à distance.`);
+        console.log(`Branche distante "${branchName}" supprimée avec succès.`);
     } catch (error) {
-        console.log(`Branche ${branchName} non trouvée à distance ou déjà supprimée.`);
+        console.error(`Erreur lors de la suppression de la branche distante "${branchName}" : ${error.message}`);
     }
 }
 
