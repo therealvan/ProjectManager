@@ -48,6 +48,11 @@ function commitChanges(message) {
 
 function pushChanges(branch = getCurrentBranch()) {
     try {
+        // Update Branche.git with the current branch before pushing
+        const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+        fs.writeFileSync(path.join(__dirname, '..', '..', 'Branche.git'), currentBranch);
+        console.log(\`Branche.git updated to: \${currentBranch}\`);
+
         const { updateReadme } = require(path.join(__dirname, '..', '..', 'Readme.js'));
         updateReadme();
         
@@ -143,7 +148,7 @@ module.exports = {
 
 // Write the modified GitHub.js
 fs.writeFileSync(githubPath, newGithubContent);
-console.log('GitHub.js modified to push to current branch by default.');
+console.log('GitHub.js modified to update Branche.git before pushing.');
 
 // Push to the current branch
 const { pushChanges } = require('./src/GitHub/GitHub.js');
