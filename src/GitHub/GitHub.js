@@ -38,16 +38,9 @@ function commitChanges(message) {
     execSync(`git commit -m "${message}"`, { stdio: 'inherit' });
 }
 
-function pushChanges(branchOverride) {
+function pushChanges() {
+    const branch = getCurrentBranch();
     try {
-        // Update Branche.git with the current branch before pushing
-        const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
-        fs.writeFileSync(path.join(__dirname, '..', '..', 'Branche.git'), currentBranch);
-        console.log(`Branche.git updated to: ${currentBranch}`);
-
-        // Use branchOverride if provided, otherwise use the updated current branch
-        const branch = branchOverride || currentBranch;
-
         const { updateReadme } = require(path.join(__dirname, '..', '..', 'Readme.js'));
         updateReadme();
         
@@ -89,7 +82,25 @@ function createRelease(version) {
 }
 
 function checkoutBranch(branchName) {
-    execSync(`git checkout ${branchName}`, { stdio: 'inherit' });
+    try {
+        // Check for local changes
+        const status = execSync('git status --porcelain', { encoding: 'utf8' });
+        if (status.trim().length > 0) {
+            // Discard all local changes (staged and unstaged)
+            execSync('git reset --hard', { stdio: 'inherit' });
+            execSync('git clean -fd', { stdio: 'inherit' });
+            console.log('All local uncommitted changes discarded.');
+        }
+        // Fetch latest from remote and checkout branch
+        execSync('git fetch origin', { stdio: 'inherit' });
+        execSync(`git checkout ${branchName}`, { stdio: 'inherit' });
+        console.log(`Switched to branch ${branchName}`);
+        // Update Branche.git
+        fs.writeFileSync(path.join(__dirname, '..', '..', 'Branche.git'), branchName);
+    } catch (error) {
+        console.error(`Error switching to branch ${branchName}: ${error.message}`);
+        throw error;
+    }
 }
 
 function mergeBranch(branchName) {
