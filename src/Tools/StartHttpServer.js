@@ -95,8 +95,8 @@ function generateSelfSignedCert() {
     if (!fs.existsSync(certDir)) {
         fs.mkdirSync(certDir, { recursive: true });
     }
-    diagHttp.log('Génération d’un certificat auto-signé pour localhost et 10.0.2.10...');
-    execSync(`openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=FR/ST=State/L=City/O=Project/CN=localhost" -addext "subjectAltName = DNS:localhost, IP:10.0.2.10" -keyout "${keyPath}" -out "${certPath}"`, { stdio: 'inherit' });
+    diagHttp.log('Génération d’un certificat auto-signé pour localhost...');
+    execSync(`openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=FR/ST=State/L=City/O=Project/CN=localhost" -addext "subjectAltName = DNS:localhost" -keyout "${keyPath}" -out "${certPath}"`, { stdio: 'inherit' });
     diagHttp.log('Certificat auto-signé généré.');
     trustCertificate(certPath);
     return { keyPath, certPath };
@@ -145,36 +145,6 @@ function getDefaultBrowserWin11() {
     throw new Error('Aucun navigateur par défaut trouvé.');
 }
 
-function cleanTempDir(tempDir, browserProcess) {
-    if (browserProcess && !browserProcess.killed) {
-        diagHttp.log('Tentative de fermeture du processus du navigateur spécifique...');
-        try {
-            process.kill(browserProcess.pid);
-            diagHttp.log('Processus du navigateur fermé.');
-        } catch (error) {
-            diagHttp.log(`Erreur lors de la fermeture du processus : ${error.message}`);
-        }
-    }
-    let retries = 3;
-    while (retries > 0) {
-        try {
-            fs.rmSync(tempDir, { recursive: true, force: true });
-            diagHttp.log('Dossier temporaire supprimé.');
-            break;
-        } catch (error) {
-            if (error.code === 'EBUSY') {
-                diagHttp.log(`Dossier temporaire verrouillé, nouvelle tentative dans 2s...`);
-                require('child_process').execSync('ping 127.0.0.1 -n 3 >nul', { stdio: 'ignore' });
-                retries--;
-                if (retries === 0) throw new Error(`Erreur lors du nettoyage : ${error.message}`);
-            } else {
-                debug.log(`Erreur inattendue lors du nettoyage : ${error.message}`);
-                break;
-            }
-        }
-    }
-}
-
 function startHttpServer() {
     diagHttp.log('Début de la préparation du serveur HTTPS...');
     installNode();
@@ -187,10 +157,10 @@ function startHttpServer() {
         fs.writeFileSync(faviconPath, '');
         diagHttp.log('Fichier favicon.ico créé.');
     }
-    let serverProcess, browserProcess;
+    let serverProcess;
     try {
         diagHttp.log('Démarrage du serveur HTTPS sur le port 8080...');
-        serverProcess = spawn(serverPath, ['.', '-p', '8080', '-S', '-C', certPath, '-K', keyPath], { cwd: PROJECT_DIR, detached: true, stdio: 'ignore', shell: true });
+        serverProcess = spawn(serverPath, ['.', '-p', '8080', '-S', '-C', certPath, '-K', keyPath], { cwd: PROJECT_DIR, detached: true, stdio: 'inherit', shell: true });
         serverProcess.on('error', (err) => {
             debug.log(`Erreur lors du démarrage du serveur : ${err.message}`);
             throw err;
@@ -208,23 +178,20 @@ function startHttpServer() {
         diagHttp.log('Serveur HTTPS démarré avec succès.');
 
         const browserPath = getDefaultBrowserWin11();
-        const browserArgs = ['--user-data-dir=' + tempDir, '--enable-webgpu', 'https://10.0.2.10:8080'];
+        const browserArgs = ['--user-data-dir=' + tempDir, '--enable-webgpu', 'https://localhost:8080'];
         diagHttp.log('Lancement du navigateur...');
-        browserProcess = spawn(`"${browserPath}"`, browserArgs, { shell: true, detached: false, stdio: 'ignore' });
+        const browserProcess = spawn(`"${browserPath}"`, browserArgs, { shell: true, detached: false, stdio: 'inherit' });
         browserProcess.on('error', (err) => {
             debug.log(`Erreur lors du lancement du navigateur : ${err.message}`);
             throw err;
         });
         diagHttp.log('Navigateur lancé avec succès (PID: ' + browserProcess.pid + ').');
 
-        setTimeout(() => cleanTempDir(tempDir, browserProcess), 5000);
-
         diagHttp.log('Serveur en cours d’exécution. Maintien du processus actif...');
         process.stdin.resume();
     } catch (error) {
         debug.log(`Erreur dans startHttpServer : ${error.message}`);
         if (serverProcess && !serverProcess.killed) process.kill(serverProcess.pid);
-        cleanTempDir(tempDir, browserProcess);
         throw error;
     }
 }
