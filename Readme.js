@@ -9,7 +9,8 @@ function updateReadme() {
 # ProjectManager
 
 ## Description
-ProjectManager is an automated project management tool using Node.js and Git. It allows initializing, updating, and managing a GitHub repository, generating a file tree, listing functions in JS files, and consolidating code into an exploitable file.
+ProjectManager is an automated project management tool using Node.js
+It allows initializing, updating, and managing a GitHub by only speaking to Grok
 
 ## Prerequisites
 - Node.js installed

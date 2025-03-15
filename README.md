@@ -3,7 +3,8 @@
 # ProjectManager
 
 ## Description
-ProjectManager is an automated project management tool using Node.js and Git. It allows initializing, updating, and managing a GitHub repository, generating a file tree, listing functions in JS files, and consolidating code into an exploitable file.
+ProjectManager is an automated project management tool using Node.js
+It allows initializing, updating, and managing a GitHub by only speaking to Grok
 
 ## Prerequisites
 - Node.js installed
@@ -41,7 +42,7 @@ ProjectManager is an automated project management tool using Node.js and Git. It
 3. Submit a pull request
 
 ## Last Update
-3/15/2025, 12:38:47 PM
+3/15/2025, 12:42:26 PM
 
 ## License
 No license specified at this time.
