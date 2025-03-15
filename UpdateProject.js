@@ -1,14 +1,12 @@
 // UpdateProject.js
 const { pushChanges } = require('./src/GitHub/GitHub.js');
 
-// Push the project changes to GitHub
-function updateAndPush() {
-    console.log('Pushing project changes to GitHub...');
+// Function to push local changes to the repository
+function pushToRepo() {
+    console.log('Pushing local changes to GitHub repository...');
     pushChanges();
     console.log('Push completed.');
 }
 
 // Execute the push
-updateAndPush();
-
-module.exports = { updateAndPush };
+pushToRepo();

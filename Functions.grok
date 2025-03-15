@@ -28,4 +28,6 @@ src\GitHub\GitHub.js: logCommits
 src\GitHub\GitHub.js: diffChanges
 StartProject.js: delay
 StartProject.js: startProject
-UpdateProject.js: updateProject
+UpdateProject.js: updateProjectTree
+UpdateProject.js: scanDirectory
+UpdateProject.js: generateTree

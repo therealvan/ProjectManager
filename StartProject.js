@@ -34,7 +34,7 @@ async function startProject() {
         for (const file of files) {
             if (file !== 'StartProject.js' && file !== 'UpdateProject.js') {
                 const filePath = path.join(PROJECT_DIR, file);
-                let retries = 3;
+                let retries = 5; // Increased retries
                 while (retries > 0) {
                     try {
                         if (fs.lstatSync(filePath).isDirectory()) {
@@ -44,9 +44,9 @@ async function startProject() {
                         }
                         break;
                     } catch (err) {
-                        if (err.code === 'EBUSY') {
-                            console.log(`File ${file} locked, waiting 1s...`);
-                            await delay(1000);
+                        if (err.code === 'EBUSY' || err.code === 'EPERM') {
+                            console.log(`File ${file} locked, waiting 2s...`);
+                            await delay(2000); // Increased delay
                             retries--;
                             if (retries === 0) throw err;
                         } else {
@@ -69,15 +69,15 @@ async function startProject() {
         console.log('Starting cloning to root...');
         const tempDir = path.join(PROJECT_DIR, 'temp_repo');
         if (fs.existsSync(tempDir)) {
-            let retries = 3;
+            let retries = 5; // Increased retries
             while (retries > 0) {
                 try {
                     fs.rmSync(tempDir, { recursive: true, force: true });
                     break;
                 } catch (err) {
-                    if (err.code === 'EBUSY') {
-                        console.log('temp_repo directory locked, waiting 1s...');
-                        await delay(1000);
+                    if (err.code === 'EBUSY' || err.code === 'EPERM') {
+                        console.log('temp_repo directory locked, waiting 2s...');
+                        await delay(2000); // Increased delay
                         retries--;
                         if (retries === 0) throw err;
                     } else {
@@ -90,15 +90,15 @@ async function startProject() {
         const tempFiles = fs.readdirSync(tempDir);
         for (const file of tempFiles) {
             if (file !== '.git') {
-                let retries = 3;
+                let retries = 5; // Increased retries
                 while (retries > 0) {
                     try {
                         fs.renameSync(path.join(tempDir, file), path.join(PROJECT_DIR, file));
                         break;
                     } catch (err) {
-                        if (err.code === 'EBUSY') {
-                            console.log(`File ${file} locked, waiting 1s...`);
-                            await delay(1000);
+                        if (err.code === 'EBUSY' || err.code === 'EPERM') {
+                            console.log(`File ${file} locked, waiting 2s...`);
+                            await delay(2000); // Increased delay
                             retries--;
                             if (retries === 0) throw err;
                         } else {
