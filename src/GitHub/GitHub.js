@@ -40,6 +40,8 @@ function commitChanges(message) {
 
 function pushChanges() {
     const branch = getCurrentBranch();
+    addFiles('.');
+    commitChanges('Mise à jour automatique du projet');
     execSync(`git push origin ${branch}`, { stdio: 'inherit' });
 }
 

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Contenu mis à jour de GitHub.js
+// Contenu mis à jour de GitHub.js (basé sur ton fichier actuel)
 const updatedGithubJs = `const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -44,6 +44,8 @@ function commitChanges(message) {
 
 function pushChanges() {
     const branch = getCurrentBranch();
+    addFiles('.');
+    commitChanges('Mise à jour automatique du projet');
     execSync(\`git push origin \${branch}\`, { stdio: 'inherit' });
 }
 
@@ -110,10 +112,12 @@ module.exports = {
 
 // Écriture du nouveau GitHub.js
 fs.writeFileSync(path.join(__dirname, 'src', 'GitHub', 'GitHub.js'), updatedGithubJs);
-console.log('GitHub.js modifié avec succès pour lire Branche.git.');
+console.log('GitHub.js modifié avec succès.');
 
-// Exécution des commandes pour pousser le code
+// Chargement de GitHub.js pour appeler ses fonctions
 const github = require('./src/GitHub/GitHub.js');
+
+// Redirection des sorties vers project.log
 const logStream = fs.createWriteStream(path.join(__dirname, 'project.log'), { flags: 'a' });
 console.log = (...args) => logStream.write(args.join(' ') + '\n');
 
@@ -121,8 +125,7 @@ if (!fs.existsSync(path.join(__dirname, 'project.log'))) {
     fs.writeFileSync(path.join(__dirname, 'project.log'), '');
 }
 
-console.log('Début de la mise à jour du dépôt...');
-github.addFiles('.');
-github.commitChanges('Mise à jour avec GitHub.js lisant Branche.git');
+// Appel explicite de pushChanges
+console.log('Début du push...');
 github.pushChanges();
-console.log('Code poussé avec succès sur GitHub.');
+console.log('Push terminé avec succès.');
