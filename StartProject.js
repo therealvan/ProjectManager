@@ -2,7 +2,6 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Configuration du projet
 const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
 const PROJECT_DIR = path.join(__dirname);
 
@@ -14,7 +13,6 @@ async function startProject() {
     console.log('Démarrage de StartProject.js...');
     console.log('-------------');
 
-    // Étape 1 : Vérifie la présence de Git (suppose que Git est installé via npm ou système)
     try {
         console.log('Vérification de Git...');
         execSync('git --version', { stdio: 'inherit' });
@@ -26,7 +24,6 @@ async function startProject() {
     }
     console.log('-------------');
 
-    // Étape 2 : Prépare le dossier principal et supprime tout sauf StartProject.js et UpdateProject.js
     try {
         console.log('Vérification et nettoyage du dossier principal :', PROJECT_DIR);
         if (!fs.existsSync(PROJECT_DIR)) {
@@ -68,7 +65,6 @@ async function startProject() {
     }
     console.log('-------------');
 
-    // Étape 3 : Clone le dépôt dans un dossier temporaire puis déplace à la racine
     try {
         console.log('Lancement du clonage à la racine...');
         const tempDir = path.join(PROJECT_DIR, 'temp_repo');
@@ -121,7 +117,6 @@ async function startProject() {
     }
     console.log('-------------');
 
-    // Étape 4 : Liste les fichiers locaux après clonage
     try {
         console.log('Vérification des fichiers locaux à la racine...');
         const files = fs.readdirSync('.', { withFileTypes: true });
@@ -134,7 +129,6 @@ async function startProject() {
     }
     console.log('-------------');
 
-    // Étape 5 : Lance Arborescence.js
     try {
         console.log('Lancement de Arborescence.js...');
         const arborescence = require(path.join(PROJECT_DIR, 'Arborescence.js'));
@@ -145,11 +139,10 @@ async function startProject() {
     }
     console.log('-------------');
 
-    // Ajout demandé : Exécute Fonctions.js et Arborescence.js à la fin
     try {
         console.log('Exécution de Fonctions.js...');
         const fonctions = require(path.join(PROJECT_DIR, 'Fonctions.js'));
-        fonctions.main(); // Suppose une fonction main dans Fonctions.js
+        fonctions.listFunctionsInJsFiles();
     } catch (error) {
         console.error('Erreur lors de l’exécution de Fonctions.js :', error.message);
     }
@@ -164,7 +157,6 @@ async function startProject() {
 
     console.log('Terminé !');
 
-    // Étape finale : Récupère la branche active et l'écrit dans Branche.git
     try {
         console.log('Récupération de la branche active...');
         const branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
@@ -173,10 +165,8 @@ async function startProject() {
     } catch (error) {
         console.error('Erreur lors de la récupération de la branche :', error.message);
     }
-    
 }
 
-// Exécute la fonction principale
 try {
     console.log('Tentative d’exécution de startProject...');
     startProject().catch(err => console.error('Erreur globale dans StartProject.js :', err.message));

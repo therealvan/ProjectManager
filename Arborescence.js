@@ -1,4 +1,3 @@
-// Arborescence.js - Module pour scanner et générer une arborescence
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -48,9 +47,8 @@ async function generateArborescence(outputFile = 'Arborescence.grok') {
         );
         console.log(`Fichier ${outputFile} généré avec succès`);
 
-        // Chargement et exécution explicite de listFunctionsInJsFiles depuis Fonctions.js
         const { listFunctionsInJsFiles } = require('./Fonctions.js');
-        await listFunctionsInJsFiles(); // Appel explicite de la fonction
+        await listFunctionsInJsFiles();
     } catch (error) {
         console.error('Erreur lors de la génération :', error.message);
         throw error;
