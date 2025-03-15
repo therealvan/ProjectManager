@@ -1,4 +1,10 @@
-# ProjectManager
+const fs = require('fs');
+const path = require('path');
+
+function updateReadme() {
+    console.log('Mise à jour de README.md...');
+    
+    const readmeContent = `# ProjectManager
 
 ## Description
 ProjectManager est un outil de gestion de projet automatisé utilisant Node.js et Git. Il permet d'initialiser, mettre à jour et gérer un dépôt GitHub, de générer une arborescence de fichiers, de lister les fonctions des fichiers JS, et de regrouper le code dans un fichier exploitable.
@@ -9,7 +15,7 @@ ProjectManager est un outil de gestion de projet automatisé utilisant Node.js e
 - Accès au dépôt GitHub : [https://github.com/therealvan/ProjectManager](https://github.com/therealvan/ProjectManager)
 
 ## Structure du projet
-```
+\`\`\`
 ├── src/
 │   └── GitHub/
 │       ├── DiagGitHub.js  # Logs d'erreurs
@@ -23,7 +29,7 @@ ProjectManager est un outil de gestion de projet automatisé utilisant Node.js e
 ├── README.md              # Ce fichier
 ├── Branche.git            # Branche active
 └── *.grok                 # Fichiers générés
-```
+\`\`\`
 
 ## Fonctionnalités
 - Clonage du dépôt depuis GitHub
@@ -39,7 +45,18 @@ ProjectManager est un outil de gestion de projet automatisé utilisant Node.js e
 3. Soumettez une pull request
 
 ## Dernière mise à jour
-15/03/2025 12:17:39
+${new Date().toLocaleString('fr-FR')}
 
 ## Licence
 Aucune licence spécifiée pour le moment.
+`;
+
+    fs.writeFileSync(path.join(__dirname, 'README.md'), readmeContent, 'utf8');
+    console.log('README.md mis à jour avec succès.');
+}
+
+module.exports = { updateReadme };
+
+if (require.main === module) {
+    updateReadme();
+}

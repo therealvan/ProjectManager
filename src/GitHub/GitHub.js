@@ -41,21 +41,21 @@ function commitChanges(message) {
 function pushChanges() {
     const branch = getCurrentBranch();
     try {
-        // Vérifie s'il y a des modifications locales à pousser
+        // Mise à jour du README avant le push
+        const { updateReadme } = require(path.join(__dirname, '..', '..', 'Readme.js'));
+        updateReadme();
+        
         const status = execSync('git status --porcelain', { encoding: 'utf8' });
         if (status.trim().length === 0) {
             console.log('Aucune modification locale à pousser.');
             return;
         }
-        // Ajoute toutes les modifications locales
         addFiles('.');
-        // Commit uniquement s'il y a quelque chose à committer
         try {
             commitChanges('Mise à jour automatique du projet');
         } catch (commitError) {
             console.log('Rien de nouveau à committer.');
         }
-        // Force le push pour prioriser le local sur le distant
         execSync(`git push origin ${branch} --force`, { stdio: 'inherit' });
         console.log(`Code local poussé avec succès sur ${branch} (force).`);
     } catch (error) {
