@@ -17,7 +17,7 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 │   └── GitHub/
 │       ├── DiagGitHub.js  # Error logs
 │       └── GitHub.js      # Git functions
-├── Arborescence.js        # Generates the tree
+├── ProjectTree.js        # Generates the tree
 ├── Code.js                # Consolidates JS code
 ├── Fonctions.js           # Lists functions
 ├── Readme.js              # Updates this README
@@ -42,7 +42,7 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 3. Submit a pull request
 
 ## Last Update
-3/15/2025, 12:53:15 PM
+3/15/2025, 1:04:20 PM
 
 ## License
 No license specified at this time.

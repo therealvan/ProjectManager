@@ -130,12 +130,12 @@ async function startProject() {
     console.log('-------------');
 
     try {
-        console.log('Launching Arborescence.js...');
-        const arborescence = require(path.join(PROJECT_DIR, 'Arborescence.js'));
+        console.log('Launching ProjectTree.js...');
+        const arborescence = require(path.join(PROJECT_DIR, 'ProjectTree.js'));
         arborescence.generateTree();
-        console.log('Step 5: Arborescence.js executed successfully.');
+        console.log('Step 5: ProjectTree.js executed successfully.');
     } catch (error) {
-        console.error('Step 5: Error executing Arborescence.js:', error.message);
+        console.error('Step 5: Error executing ProjectTree.js:', error.message);
     }
     console.log('-------------');
 
@@ -148,11 +148,11 @@ async function startProject() {
     }
 
     try {
-        console.log('Final launch of Arborescence.js...');
-        const arborescence = require(path.join(PROJECT_DIR, 'Arborescence.js'));
+        console.log('Final launch of ProjectTree.js...');
+        const arborescence = require(path.join(PROJECT_DIR, 'ProjectTree.js'));
         arborescence.generateTree();
     } catch (error) {
-        console.error('Error during final execution of Arborescence.js:', error.message);
+        console.error('Error during final execution of ProjectTree.js:', error.message);
     }
 
     console.log('Finished!');

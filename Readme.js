@@ -23,7 +23,7 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 │   └── GitHub/
 │       ├── DiagGitHub.js  # Error logs
 │       └── GitHub.js      # Git functions
-├── Arborescence.js        # Generates the tree
+├── ProjectTree.js        # Generates the tree
 ├── Code.js                # Consolidates JS code
 ├── Fonctions.js           # Lists functions
 ├── Readme.js              # Updates this README
