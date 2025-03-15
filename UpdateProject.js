@@ -5,7 +5,7 @@ const path = require('path');
 // Path to GitHub.js
 const githubPath = path.join(__dirname, 'src', 'GitHub', 'GitHub.js');
 
-// New content for GitHub.js with modified pushChanges
+// New content for GitHub.js with corrected pushChanges
 const newGithubContent = `const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -46,12 +46,15 @@ function commitChanges(message) {
     execSync(\`git commit -m "\${message}"\`, { stdio: 'inherit' });
 }
 
-function pushChanges(branch = getCurrentBranch()) {
+function pushChanges(branchOverride) {
     try {
         // Update Branche.git with the current branch before pushing
         const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
         fs.writeFileSync(path.join(__dirname, '..', '..', 'Branche.git'), currentBranch);
         console.log(\`Branche.git updated to: \${currentBranch}\`);
+
+        // Use branchOverride if provided, otherwise use the updated current branch
+        const branch = branchOverride || currentBranch;
 
         const { updateReadme } = require(path.join(__dirname, '..', '..', 'Readme.js'));
         updateReadme();
@@ -148,7 +151,7 @@ module.exports = {
 
 // Write the modified GitHub.js
 fs.writeFileSync(githubPath, newGithubContent);
-console.log('GitHub.js modified to update Branche.git before pushing.');
+console.log('GitHub.js modified to update Branche.git and push to current branch.');
 
 // Push to the current branch
 const { pushChanges } = require('./src/GitHub/GitHub.js');

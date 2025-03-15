@@ -38,12 +38,15 @@ function commitChanges(message) {
     execSync(`git commit -m "${message}"`, { stdio: 'inherit' });
 }
 
-function pushChanges(branch = getCurrentBranch()) {
+function pushChanges(branchOverride) {
     try {
         // Update Branche.git with the current branch before pushing
         const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
         fs.writeFileSync(path.join(__dirname, '..', '..', 'Branche.git'), currentBranch);
         console.log(`Branche.git updated to: ${currentBranch}`);
+
+        // Use branchOverride if provided, otherwise use the updated current branch
+        const branch = branchOverride || currentBranch;
 
         const { updateReadme } = require(path.join(__dirname, '..', '..', 'Readme.js'));
         updateReadme();

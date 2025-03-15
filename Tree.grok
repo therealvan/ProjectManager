@@ -6,14 +6,14 @@
 │   ├── Instruction2.txt
 │   └── Instruction3.txt
 ├── src/
-│   └── GitHub/
-│       ├── DiagGitHub.js
-│       └── GitHub.js
-├── Tools/
-│   ├── DiagHttpServer.js
-│   ├── HttpServer.js
-│   ├── Privileges.js
-│   └── StartHttpServer.js
+│   ├── GitHub/
+│   │   ├── DiagGitHub.js
+│   │   └── GitHub.js
+│   └── Tools/
+│       ├── DiagHttpServer.js
+│       ├── HttpServer.js
+│       ├── Privileges.js
+│       └── StartHttpServer.js
 ├── Branche.git
 ├── code.grok
 ├── Code.js
@@ -22,9 +22,8 @@
 ├── Functions.js
 ├── generated_image.jpg
 ├── LaunchProject.js
+├── project.log
 ├── ProjectTree.js
 ├── Readme.js
 ├── README.md
-├── StartProject.js
-├── Tree.grok
 └── UpdateProject.js
