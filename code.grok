@@ -1,0 +1,641 @@
+// Contenu de Arborescence.js
+// Arborescence.js - Module pour scanner et générer une arborescence
+const fs = require('fs').promises;
+const path = require('path');
+
+async function scanDirectory(dir, prefix = '', visited = new Set()) {
+    try {
+        const realPath = await fs.realpath(dir);
+        if (visited.has(realPath)) return '';
+        visited.add(realPath);
+
+        const files = await fs.readdir(dir, { withFileTypes: true });
+        const filteredFiles = files
+            .filter(file => !file.name.startsWith('.'))
+            .sort((a, b) => {
+                if (a.isDirectory() === b.isDirectory()) {
+                    return a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' });
+                }
+                return a.isDirectory() ? -1 : 1;
+            });
+
+        let result = '';
+        for (let i = 0; i < filteredFiles.length; i++) {
+            const file = filteredFiles[i];
+            const isLast = i === filteredFiles.length - 1;
+            const filePath = path.join(dir, file.name);
+            const suffix = file.isDirectory() ? '/' : '';
+            result += `${prefix}${isLast ? '└── ' : '├── '}${file.name}${suffix}\n`;
+
+            if (file.isDirectory()) {
+                const newPrefix = `${prefix}${isLast ? '    ' : '│   '}`;
+                result += await scanDirectory(filePath, newPrefix, visited);
+            }
+        }
+        return result;
+    } catch (error) {
+        console.warn(`Impossible de scanner ${dir}: ${error.message}`);
+        return '';
+    }
+}
+
+async function generateArborescence(outputFile = 'Arborescence.grok') {
+    try {
+        const arborescence = await scanDirectory(__dirname);
+        await fs.writeFile(
+            path.join(__dirname, outputFile),
+            arborescence,
+            { encoding: 'utf8' }
+        );
+        console.log(`Fichier ${outputFile} généré avec succès`);
+
+        // Chargement et exécution explicite de listFunctionsInJsFiles depuis Fonctions.js
+        const { listFunctionsInJsFiles } = require('./Fonctions.js');
+        await listFunctionsInJsFiles(); // Appel explicite de la fonction
+    } catch (error) {
+        console.error('Erreur lors de la génération :', error.message);
+        throw error;
+    }
+}
+
+if (require.main === module) {
+    generateArborescence().catch(error => {
+        console.error('Échec de l\'exécution:', error.message);
+        process.exit(1);
+    });
+}
+
+module.exports = { scanDirectory, generateArborescence };
+
+// Contenu de Code.js
+const fs = require('fs');
+const path = require('path');
+
+function scanDirectory(dir) {
+    let results = [];
+    const files = fs.readdirSync(dir, { withFileTypes: true });
+    for (const file of files) {
+        const fullPath = path.join(dir, file.name);
+        if (file.isDirectory()) {
+            results = results.concat(scanDirectory(fullPath));
+        } else if (file.name.endsWith('.js') && file.name !== 'UpdateProject.js') {
+            results.push(fullPath);
+        }
+    }
+    return results;
+}
+
+function writeCodeGrok() {
+    const projectDir = __dirname;
+    const jsFiles = scanDirectory(projectDir);
+    let codeContent = '';
+
+    for (const file of jsFiles) {
+        const content = fs.readFileSync(file, 'utf8');
+        codeContent += `// Contenu de ${path.relative(projectDir, file)}
+${content}
+
+`;
+    }
+
+    fs.writeFileSync(path.join(projectDir, 'code.grok'), codeContent);
+    console.log('code.grok créé avec succès.');
+}
+
+writeCodeGrok();
+
+
+// Contenu de Fonctions.js
+const fs = require('fs');
+const path = require('path');
+
+function listFunctionsInJsFiles() {
+    const dir = path.join(__dirname);
+    const functionList = [];
+
+    function scanDirectory(directory) {
+        const files = fs.readdirSync(directory, { withFileTypes: true });
+        files.forEach(file => {
+            const filePath = path.join(directory, file.name);
+            if (file.isDirectory()) {
+                scanDirectory(filePath);
+            } else if (file.name.endsWith('.js')) {
+                const content = fs.readFileSync(filePath, 'utf8');
+                // Regex améliorée pour capturer différentes syntaxes de fonctions
+                const functionRegex = /(?:function\s+([a-zA-Z_]\w*)\s*\([^)]*\)|const\s+([a-zA-Z_]\w*)\s*=\s*\([^)]*\)\s*=>|([a-zA-Z_]\w*)\s*:\s*function\s*\([^)]*\))/g;
+                let match;
+                while ((match = functionRegex.exec(content)) !== null) {
+                    const relativePath = path.relative(__dirname, filePath);
+                    // Prend le premier groupe de capture non undefined
+                    const functionName = match[1] || match[2] || match[3];
+                    functionList.push(`${relativePath}: ${functionName}`);
+                }
+            }
+        });
+    }
+
+    try {
+        scanDirectory(dir);
+        // Écriture dans le fichier Fonctions.grok
+        const outputPath = path.join(__dirname, 'Fonctions.grok');
+        fs.writeFileSync(outputPath, functionList.join('\n'), 'utf8');
+        console.log(`Successfully wrote ${functionList.length} functions to Fonctions.grok`);
+        return functionList;
+    } catch (error) {
+        console.error('Error processing files:', error);
+        return [];
+    }
+}
+
+module.exports = { listFunctionsInJsFiles };
+
+// Exécute la fonction si le fichier est lancé directement
+if (require.main === module) {
+    listFunctionsInJsFiles();
+}
+
+// Contenu de src\GitHub\DiagGitHub.js
+// DiagGitHub.js - Module de débogage conditionnel
+function log(message) {
+    console.error("Erreur détectée : " + message);
+}
+module.exports = { log };
+
+
+// Contenu de src\GitHub\GitHub.js
+// GitHub.js - Module pour interagir avec GitHub
+const { execSync } = require('child_process');
+const fs = require('fs');
+
+function verifyGitSuccess(commandOutput, successMessage) {
+    if (commandOutput && commandOutput.includes('fatal')) {
+        throw new Error('Échec de l’opération Git : ' + commandOutput);
+    }
+    console.log(successMessage);
+}
+
+function getCurrentBranch() {
+    if (fs.existsSync('Branche.git')) {
+        return fs.readFileSync('Branche.git', 'utf8').trim();
+    } else {
+        throw new Error('Fichier Branche.git introuvable');
+    }
+}
+
+function cloneOrUpdateRepo(repoUrl, branch = 'V1.0.0') {
+    try {
+        if (!fs.existsSync('.git')) {
+            console.log('Clonage du dépôt à la racine...');
+            const output = execSync(`git clone -b ${branch} ${repoUrl} .`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Dépôt cloné avec succès à la racine.');
+        } else {
+            console.log('Mise à jour du dépôt à la racine...');
+            let output = execSync('git fetch origin', { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Fetch effectué avec succès.');
+            output = execSync(`git checkout ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Checkout de la branche effectué avec succès.');
+            output = execSync(`git pull origin ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Dépôt mis à jour avec succès à la racine.');
+        }
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du clonage ou de la mise à jour du dépôt : " + error.message);
+        throw error;
+    }
+}
+
+function listLocalFiles() {
+    try {
+        const files = fs.readdirSync('.', { withFileTypes: true });
+        const fileList = files.map(item => item.isDirectory() ? item.name + '/' : item.name);
+        console.log('Fichiers locaux après téléchargement :', fileList);
+        return fileList;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la liste des fichiers locaux : " + error.message);
+        throw error;
+    }
+}
+
+function addFiles(pattern) {
+    try {
+        console.log('Ajout des fichiers à l’index...');
+        const output = execSync(`git add ${pattern}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Fichiers ajoutés à l’index.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de l’ajout des fichiers : " + error.message);
+        throw error;
+    }
+}
+
+function commitChanges(message) {
+    try {
+        console.log('Création du commit...');
+        const output = execSync(`git commit -m "${message}" --allow-empty`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Commit créé avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du commit : " + error.message);
+        throw error;
+    }
+}
+
+function pushChanges(branch) {
+    try {
+        console.log('Poussée des modifications vers GitHub...');
+        const output = execSync(`git push origin ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Modifications poussées avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du push : " + error.message);
+        throw error;
+    }
+}
+
+function pullChanges(branch) {
+    try {
+        console.log('Tirage des modifications depuis GitHub...');
+        const output = execSync(`git pull origin ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Modifications tirées avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du pull : " + error.message);
+        throw error;
+    }
+}
+
+function createBranch(branchName) {
+    try {
+        console.log('Création de la branche...');
+        let output = execSync(`git checkout -b ${branchName}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Branche ${branchName} créée localement.');
+        output = execSync(`git push origin ${branchName}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Branche ${branchName} poussée avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la création de la branche : " + error.message);
+        throw error;
+    }
+}
+
+function createRelease(version, message) {
+    try {
+        console.log('Création de la release...');
+        let output = execSync(`git tag ${version}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Tag ${version} créé avec succès.');
+        output = execSync(`git push origin ${version}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Release ${version} poussée avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la création de la release : " + error.message);
+        throw error;
+    }
+}
+
+function checkoutBranch(branch) {
+    try {
+        console.log('Checkout de la branche...');
+        const output = execSync(`git checkout ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Branche ${branch} checkout avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du checkout : " + error.message);
+        throw error;
+    }
+}
+
+function mergeBranch(sourceBranch, targetBranch) {
+    try {
+        console.log('Fusion des branches...');
+        let output = execSync(`git checkout ${targetBranch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Checkout de ${targetBranch} réussi.');
+        output = execSync(`git merge ${sourceBranch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Fusion de ${sourceBranch} dans ${targetBranch} réussie.');
+        output = execSync(`git push origin ${targetBranch}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Modifications poussées après fusion.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la fusion : " + error.message);
+        throw error;
+    }
+}
+
+function deleteBranch(branch, remote = false) {
+    try {
+        if (remote) {
+            console.log('Suppression de la branche distante...');
+            const output = execSync(`git push origin --delete ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Branche distante ${branch} supprimée.');
+        } else {
+            console.log('Suppression de la branche locale...');
+            const output = execSync(`git branch -D ${branch}`, { stdio: 'inherit', encoding: 'utf8' });
+            verifyGitSuccess(output, 'Branche locale ${branch} supprimée.');
+        }
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la suppression de la branche : " + error.message);
+        throw error;
+    }
+}
+
+function status() {
+    try {
+        console.log('Vérification de l’état du dépôt...');
+        const statusOutput = execSync('git status', { encoding: 'utf8' });
+        console.log('État du dépôt :', statusOutput);
+        return statusOutput;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la vérification de l’état : " + error.message);
+        throw error;
+    }
+}
+
+function fetchRepo() {
+    try {
+        console.log('Fetch du dépôt...');
+        const output = execSync('git fetch origin', { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Dépôt fetch avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du fetch : " + error.message);
+        throw error;
+    }
+}
+
+function stashChanges() {
+    try {
+        console.log('Stash des changements...');
+        const output = execSync('git stash', { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Changements stashés avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du stash : " + error.message);
+        throw error;
+    }
+}
+
+function applyStash(index = 0) {
+    try {
+        console.log('Application du stash...');
+        const output = execSync(`git stash apply stash{${index}}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Stash ${index} appliqué avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de l’application du stash : " + error.message);
+        throw error;
+    }
+}
+
+function resetChanges(hard = false) {
+    try {
+        console.log('Reset des changements...');
+        const mode = hard ? '--hard' : '--soft';
+        const output = execSync(`git reset ${mode}`, { stdio: 'inherit', encoding: 'utf8' });
+        verifyGitSuccess(output, 'Reset des changements effectué avec succès.');
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors du reset : " + error.message);
+        throw error;
+    }
+}
+
+function logCommits(limit = 10) {
+    try {
+        console.log('Récupération des commits...');
+        const logOutput = execSync(`git log -n ${limit} --oneline`, { encoding: 'utf8' });
+        console.log('Historique des commits :', logOutput);
+        return logOutput;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la récupération des logs : " + error.message);
+        throw error;
+    }
+}
+
+function diffChanges() {
+    try {
+        console.log('Récupération des différences...');
+        const diffOutput = execSync('git diff', { encoding: 'utf8' });
+        console.log('Différences :', diffOutput);
+        return diffOutput;
+    } catch (error) {
+        const debug = require('./DiagGitHub.js');
+        debug.log("Erreur lors de la récupération des différences : " + error.message);
+        throw error;
+    }
+}
+
+module.exports = { 
+    getCurrentBranch,
+    cloneOrUpdateRepo, 
+    listLocalFiles, 
+    addFiles, 
+    commitChanges, 
+    pushChanges, 
+    pullChanges, 
+    createBranch, 
+    createRelease, 
+    checkoutBranch, 
+    mergeBranch, 
+    deleteBranch, 
+    status, 
+    fetchRepo, 
+    stashChanges, 
+    applyStash, 
+    resetChanges, 
+    logCommits, 
+    diffChanges 
+};
+
+
+// Contenu de StartProject.js
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+// Configuration du projet
+const REPO_URL = 'https://github.com/therealvan/ProjectManager.git';
+const PROJECT_DIR = path.join(__dirname);
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function startProject() {
+    console.log('Démarrage de StartProject.js...');
+    console.log('-------------');
+
+    // Étape 1 : Vérifie la présence de Git (suppose que Git est installé via npm ou système)
+    try {
+        console.log('Vérification de Git...');
+        execSync('git --version', { stdio: 'inherit' });
+        console.log('Étape 1 : Git OK.');
+    } catch (error) {
+        console.error('Étape 1 : Erreur - Git n’est pas installé ou inaccessible :', error.message);
+        console.log('Veuillez installer Git manuellement ou via npm.');
+        return;
+    }
+    console.log('-------------');
+
+    // Étape 2 : Prépare le dossier principal et supprime tout sauf StartProject.js et UpdateProject.js
+    try {
+        console.log('Vérification et nettoyage du dossier principal :', PROJECT_DIR);
+        if (!fs.existsSync(PROJECT_DIR)) {
+            fs.mkdirSync(PROJECT_DIR, { recursive: true });
+            console.log('Dossier ProjectManager créé.');
+        }
+        const files = fs.readdirSync(PROJECT_DIR);
+        for (const file of files) {
+            if (file !== 'StartProject.js' && file !== 'UpdateProject.js') {
+                const filePath = path.join(PROJECT_DIR, file);
+                let retries = 3;
+                while (retries > 0) {
+                    try {
+                        if (fs.lstatSync(filePath).isDirectory()) {
+                            fs.rmSync(filePath, { recursive: true, force: true });
+                        } else {
+                            fs.unlinkSync(filePath);
+                        }
+                        break;
+                    } catch (err) {
+                        if (err.code === 'EBUSY') {
+                            console.log(`Fichier ${file} verrouillé, attente 1s...`);
+                            await delay(1000);
+                            retries--;
+                            if (retries === 0) throw err;
+                        } else {
+                            throw err;
+                        }
+                    }
+                }
+            }
+        }
+        console.log('Étape 2 : Dossier nettoyé, seuls StartProject.js et UpdateProject.js restent.');
+        process.chdir(PROJECT_DIR);
+        console.log('Répertoire de travail changé à :', process.cwd());
+    } catch (error) {
+        console.error('Étape 2 : Erreur lors du nettoyage ou de la préparation du dossier :', error.message);
+        return;
+    }
+    console.log('-------------');
+
+    // Étape 3 : Clone le dépôt dans un dossier temporaire puis déplace à la racine
+    try {
+        console.log('Lancement du clonage à la racine...');
+        const tempDir = path.join(PROJECT_DIR, 'temp_repo');
+        if (fs.existsSync(tempDir)) {
+            let retries = 3;
+            while (retries > 0) {
+                try {
+                    fs.rmSync(tempDir, { recursive: true, force: true });
+                    break;
+                } catch (err) {
+                    if (err.code === 'EBUSY') {
+                        console.log('Dossier temp_repo verrouillé, attente 1s...');
+                        await delay(1000);
+                        retries--;
+                        if (retries === 0) throw err;
+                    } else {
+                        throw err;
+                    }
+                }
+            }
+        }
+        execSync(`git clone -b V1.0.0 ${REPO_URL} ${tempDir}`, { stdio: 'inherit' });
+        const tempFiles = fs.readdirSync(tempDir);
+        for (const file of tempFiles) {
+            if (file !== '.git') {
+                let retries = 3;
+                while (retries > 0) {
+                    try {
+                        fs.renameSync(path.join(tempDir, file), path.join(PROJECT_DIR, file));
+                        break;
+                    } catch (err) {
+                        if (err.code === 'EBUSY') {
+                            console.log(`Fichier ${file} verrouillé, attente 1s...`);
+                            await delay(1000);
+                            retries--;
+                            if (retries === 0) throw err;
+                        } else {
+                            throw err;
+                        }
+                    }
+                }
+            }
+        }
+        fs.renameSync(path.join(tempDir, '.git'), path.join(PROJECT_DIR, '.git'));
+        fs.rmSync(tempDir, { recursive: true, force: true });
+        console.log('Étape 3 : Dépôt cloné avec succès à la racine sur la branche V1.0.0.');
+    } catch (error) {
+        console.error('Étape 3 : Erreur lors du clonage :', error.message);
+        return;
+    }
+    console.log('-------------');
+
+    // Étape 4 : Liste les fichiers locaux après clonage
+    try {
+        console.log('Vérification des fichiers locaux à la racine...');
+        const files = fs.readdirSync('.', { withFileTypes: true });
+        const fileList = files.map(item => item.isDirectory() ? item.name + '/' : item.name);
+        console.log('Fichiers locaux après clonage :', fileList);
+        console.log('Étape 4 : Contenu local vérifié.');
+    } catch (error) {
+        console.error('Étape 4 : Erreur lors de la vérification :', error.message);
+        return;
+    }
+    console.log('-------------');
+
+    // Étape 5 : Lance Arborescence.js
+    try {
+        console.log('Lancement de Arborescence.js...');
+        const arborescence = require(path.join(PROJECT_DIR, 'Arborescence.js'));
+        arborescence.generateArborescence();
+        console.log('Étape 5 : Arborescence.js exécuté avec succès.');
+    } catch (error) {
+        console.error('Étape 5 : Erreur lors de l’exécution de Arborescence.js :', error.message);
+    }
+    console.log('-------------');
+
+    // Ajout demandé : Exécute Fonctions.js et Arborescence.js à la fin
+    try {
+        console.log('Exécution de Fonctions.js...');
+        const fonctions = require(path.join(PROJECT_DIR, 'Fonctions.js'));
+        fonctions.main(); // Suppose une fonction main dans Fonctions.js
+    } catch (error) {
+        console.error('Erreur lors de l’exécution de Fonctions.js :', error.message);
+    }
+
+    try {
+        console.log('Lancement final de Arborescence.js...');
+        const arborescence = require(path.join(PROJECT_DIR, 'Arborescence.js'));
+        arborescence.generateArborescence();
+    } catch (error) {
+        console.error('Erreur lors de l’exécution finale de Arborescence.js :', error.message);
+    }
+
+    console.log('Terminé !');
+
+    // Étape finale : Récupère la branche active et l'écrit dans Branche.git
+    try {
+        console.log('Récupération de la branche active...');
+        const branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+        fs.writeFileSync('Branche.git', branch);
+        console.log('Branche active (' + branch + ') écrite dans Branche.git.');
+    } catch (error) {
+        console.error('Erreur lors de la récupération de la branche :', error.message);
+    }
+    
+}
+
+// Exécute la fonction principale
+try {
+    console.log('Tentative d’exécution de startProject...');
+    startProject().catch(err => console.error('Erreur globale dans StartProject.js :', err.message));
+} catch (error) {
+    console.error('Erreur globale dans StartProject.js :', error.message);
+}
+
+module.exports = { startProject };
+
