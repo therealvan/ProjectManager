@@ -17,6 +17,7 @@
 ├── Branche.git
 ├── code.grok
 ├── Code.js
+├── Debug.js
 ├── favicon.ico
 ├── Functions.grok
 ├── Functions.js
@@ -26,4 +27,5 @@
 ├── ProjectTree.js
 ├── Readme.js
 ├── README.md
+├── Tree.grok
 └── UpdateProject.js
