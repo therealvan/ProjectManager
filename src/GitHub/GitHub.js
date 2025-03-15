@@ -66,8 +66,27 @@ function mergeBranch(branchName) {
     execSync(`git merge ${branchName}`, { stdio: 'inherit' });
 }
 
-function deleteBranch(branchName) {
-    execSync(`git branch -d ${branchName}`, { stdio: 'inherit' });
+function deleteBranch(branchName, switchBranch = true) {
+    const currentBranch = getCurrentBranch();
+    if (currentBranch === branchName) {
+        console.log(`Impossible de supprimer la branche active ${branchName}.`);
+        return;
+    }
+    // Vérifie si la branche existe localement
+    const branches = execSync('git branch', { encoding: 'utf8' });
+    if (branches.includes(branchName)) {
+        execSync(`git branch -d ${branchName}`, { stdio: 'inherit' });
+        console.log(`Branche ${branchName} supprimée localement.`);
+    } else {
+        console.log(`Branche ${branchName} non trouvée localement.`);
+    }
+    // Supprime la branche à distance si elle existe
+    try {
+        execSync(`git push origin --delete ${branchName}`, { stdio: 'inherit' });
+        console.log(`Branche ${branchName} supprimée à distance.`);
+    } catch (error) {
+        console.log(`Branche ${branchName} non trouvée à distance ou déjà supprimée.`);
+    }
 }
 
 function status() {
