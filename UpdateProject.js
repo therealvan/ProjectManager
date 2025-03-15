@@ -1,17 +1,21 @@
 // UpdateProject.js
 const fs = require('fs');
 const path = require('path');
-const github = require(path.join(__dirname, 'src', 'GitHub', 'GitHub.js'));
+const { createBranch, pushChanges } = require('./src/GitHub/GitHub.js');
 
-function updateProject() {
-    // Create a new branch named "test"
-    github.createBranch('test');
-    
-    // Push local changes to the "test" branch
-    github.pushChanges();
-}
+// Redirect console output to project.log
+const logStream = fs.createWriteStream(path.join(__dirname, 'project.log'), { flags: 'a' });
+console.log = (...args) => logStream.write(args.join(' ') + '\n');
 
-// Execute the update process
-updateProject();
+// Push code to a new branch 'test'
+createBranch('test'); // Create the new branch 'test' from the current branch
+pushChanges();        // Push all changes to the 'test' branch
 
-module.exports = { updateProject };
+// Project tree structure for this update
+/*
+├── src/
+│   └── GitHub/
+│       └── GitHub.js  # Used for branch creation and push
+├── UpdateProject.js   # This file
+└── project.log        # Log file for tracing actions
+*/
