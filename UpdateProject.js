@@ -1,13 +1,14 @@
 // UpdateProject.js
-// Purpose: Push changes to GitHub repository
+const { pushChanges } = require('./src/GitHub/GitHub.js');
 
-const github = require('./src/GitHub/GitHub.js');
-
-function updateProject() {
-    // Push changes to the remote repository
-    github.pushChanges();
-    console.log('Code pushed to GitHub');
+// Push the project changes to GitHub
+function updateAndPush() {
+    console.log('Pushing project changes to GitHub...');
+    pushChanges();
+    console.log('Push completed.');
 }
 
 // Execute the push
-updateProject();
+updateAndPush();
+
+module.exports = { updateAndPush };

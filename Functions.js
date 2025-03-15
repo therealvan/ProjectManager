@@ -40,4 +40,4 @@ module.exports = { listFunctionsInJsFiles };
 
 if (require.main === module) {
     listFunctionsInJsFiles();
-}s
+}
