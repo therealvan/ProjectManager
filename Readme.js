@@ -4,7 +4,9 @@ const path = require('path');
 function updateReadme() {
     console.log('Mise à jour de README.md...');
     
-    const readmeContent = `# ProjectManager
+    const readmeContent = `![Generated Image](./generated_image.jpg)
+
+# ProjectManager
 
 ## Description
 ProjectManager est un outil de gestion de projet automatisé utilisant Node.js et Git. Il permet d'initialiser, mettre à jour et gérer un dépôt GitHub, de générer une arborescence de fichiers, de lister les fonctions des fichiers JS, et de regrouper le code dans un fichier exploitable.

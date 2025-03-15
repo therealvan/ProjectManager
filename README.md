@@ -1,3 +1,5 @@
+![Generated Image](./generated_image.jpg)
+
 # ProjectManager
 
 ## Description
@@ -39,7 +41,7 @@ ProjectManager est un outil de gestion de projet automatisé utilisant Node.js e
 3. Soumettez une pull request
 
 ## Dernière mise à jour
-15/03/2025 12:17:39
+15/03/2025 12:28:44
 
 ## Licence
 Aucune licence spécifiée pour le moment.
