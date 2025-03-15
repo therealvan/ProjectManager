@@ -41,7 +41,7 @@ ProjectManager est un outil de gestion de projet automatisé utilisant Node.js e
 3. Soumettez une pull request
 
 ## Dernière mise à jour
-15/03/2025 12:32:06
+15/03/2025 12:32:29
 
 ## Licence
 Aucune licence spécifiée pour le moment.
