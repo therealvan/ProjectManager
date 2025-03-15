@@ -38,8 +38,7 @@ function commitChanges(message) {
     execSync(`git commit -m "${message}"`, { stdio: 'inherit' });
 }
 
-function pushChanges() {
-    const branch = getCurrentBranch();
+function pushChanges(branch = getCurrentBranch()) {
     try {
         const { updateReadme } = require(path.join(__dirname, '..', '..', 'Readme.js'));
         updateReadme();
