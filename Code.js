@@ -32,4 +32,10 @@ ${content}
     console.log('code.grok created successfully.');
 }
 
-writeCodeGrok();
+// Export functions for external use
+module.exports = { scanDirectory, writeCodeGrok };
+
+// Execute if run directly
+if (require.main === module) {
+    writeCodeGrok();
+}
