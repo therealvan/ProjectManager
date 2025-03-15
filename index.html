@@ -12,23 +12,26 @@
         .status { margin: 10px 0; }
         .active { color: green; }
         .inactive { color: red; }
-        #three-container { flex-grow: 1; height: 100vh; position: relative; }
-        #info { position: absolute; top: 10px; left: 10px; color: white; background: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 3px; }
+        #three-container { flex-grow: 1; height: 100vh; }
+        iframe { width: 100%; height: 100%; border: none; }
+        button { padding: 5px 10px; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div id="dashboard">
         <h1>Dashboard</h1>
         <div class="status" id="webgl-status">WebGL : Chargement...</div>
+        <div class="status" id="webgpu-status">WebGPU : Chargement...</div>
         <div class="status" id="ssl-status">SSL : Chargement...</div>
         <div class="status" id="threejs-status">Three.js : Chargement...</div>
+        <button id="toggleRenderer">Passer à WebGPU</button>
     </div>
     <div id="three-container">
-        <div id="info"></div>
+        <iframe id="renderFrame" src="./src/Game/TestCube.html"></iframe>
     </div>
     <script type="module">
         // Import Three.js
-        import * as THREE from './src/ExternalLib/three/three.module.js';
+        import * as THREE from './src/ExternalLib/three.js/build/three.module.js';
 
         // Dashboard checks
         function checkWebGL() {
@@ -37,6 +40,24 @@
             const status = gl ? 'Actif (WebGL 1.0)' : 'Inactif';
             document.getElementById('webgl-status').innerHTML = `WebGL : <span class="${gl ? 'active' : 'inactive'}">${status}</span>`;
             return !!gl;
+        }
+
+        async function checkWebGPU() {
+            const isSupported = !!navigator.gpu;
+            let versionInfo = 'N/A';
+            if (isSupported) {
+                try {
+                    const adapter = await navigator.gpu.requestAdapter();
+                    const features = adapter.features;
+                    versionInfo = 'WebGPU (exp)';
+                    if (features.size > 0) versionInfo += ` [${features.size} features]`;
+                } catch (e) {
+                    versionInfo = 'WebGPU (erreur d’initialisation)';
+                }
+            }
+            const status = isSupported ? `Actif (${versionInfo})` : 'Inactif';
+            document.getElementById('webgpu-status').innerHTML = `WebGPU : <span class="${isSupported ? 'active' : 'inactive'}">${status}</span>`;
+            return isSupported;
         }
 
         function checkSSL() {
@@ -51,64 +72,25 @@
             document.getElementById('threejs-status').innerHTML = `Three.js : <span class="${isThreeLoaded ? 'active' : 'inactive'}">${status}</span>`;
         }
 
-        // Three.js demo with DirectX version and FPS
-        const width = window.innerWidth - 340, height = window.innerHeight;
-        const camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
-        camera.position.z = 1;
+        // Toggle between WebGL and WebGPU renderers
+        const toggleButton = document.getElementById('toggleRenderer');
+        const renderFrame = document.getElementById('renderFrame');
+        let isWebGPU = false;
 
-        const scene = new THREE.Scene();
-        const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-        const material = new THREE.MeshNormalMaterial();
-        const mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
+        toggleButton.addEventListener('click', () => {
+            isWebGPU = !isWebGPU;
+            renderFrame.src = isWebGPU ? './src/Game/TestCubeWebGPU.html' : './src/Game/TestCube.html';
+            toggleButton.textContent = isWebGPU ? 'Passer à WebGL' : 'Passer à WebGPU';
+        });
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(width, height);
-        renderer.setAnimationLoop(animate);
-        const container = document.getElementById('three-container');
-        container.appendChild(renderer.domElement);
-
-        // Info display
-        const infoDiv = document.getElementById('info');
-        let lastTime = 0, frameCount = 0, fps = 0;
-
-        function getDirectXVersion() {
-            const gl = renderer.getContext();
-            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-            const rendererStr = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unknown';
-            return rendererStr.includes('Direct3D') ? 'DirectX 11' : 'N/A (WebGL)';
-        }
-
-        function updateInfo(time) {
-            frameCount++;
-            const delta = time - lastTime;
-            if (delta >= 1000) {
-                fps = Math.round(frameCount * 1000 / delta);
-                frameCount = 0;
-                lastTime = time;
-                infoDiv.innerHTML = `DirectX: ${getDirectXVersion()}<br>FPS: ${fps}`;
-            }
-        }
-
-        function animate(time) {
-            mesh.rotation.x = time / 2000;
-            mesh.rotation.y = time / 1000;
-            renderer.render(scene, camera);
-            updateInfo(time);
-        }
-
-        // Initialize and force first render
-        window.onload = () => {
+        // Initialize dashboard
+        window.onload = async () => {
             checkWebGL();
+            await checkWebGPU();
             checkSSL();
             checkThreeJS();
-            lastTime = performance.now();
-            renderer.render(scene, camera); // Force initial render
-            console.log("Dashboard et Three.js chargés avec succès.");
+            console.log("Dashboard chargé avec succès.");
         };
-
-        // Ensure animation starts immediately
-        requestAnimationFrame(animate);
     </script>
 </body>
 </html>

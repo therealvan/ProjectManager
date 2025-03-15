@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cube WebGPU</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100vh; display: block; }
+        #info { position: absolute; top: 10px; left: 10px; color: white; background: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <canvas id="webgpu-canvas"></canvas>
+    <div id="info">Initializing...</div>
+    <script type="module">
+        // Import Three.js core and WebGPU renderer
+        import * as THREE from '/src/ExternalLib/three.js/build/three.module.js';
+        import { WebGPURenderer } from '/src/ExternalLib/three.js/build/three.webgpu.js';
+
+        // Check WebGPU support
+        if (!navigator.gpu) {
+            console.error('WebGPU is not supported in this browser.');
+            document.getElementById('info').innerHTML = 'WebGPU non supporté';
+        } else {
+            console.log('WebGPU supported, initializing...');
+
+            // Three.js WebGPU demo
+            const canvas = document.getElementById('webgpu-canvas');
+            const width = window.innerWidth, height = window.innerHeight;
+            const camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
+            camera.position.z = 1;
+
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000); // Set scene background to black
+            const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+            const material = new THREE.MeshNormalMaterial();
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            // Use WebGPURenderer with explicit canvas
+            const renderer = new WebGPURenderer({ 
+                canvas: canvas,
+                antialias: true
+            });
+            renderer.setSize(width, height);
+            renderer.setClearColor(0x000000, 1); // Set renderer clear color to black
+
+            // Info display
+            const infoDiv = document.getElementById('info');
+            let lastTime = 0, frameCount = 0, fps = 0;
+
+            function updateInfo(time) {
+                frameCount++;
+                const delta = time - lastTime;
+                if (delta >= 1000) {
+                    fps = Math.round(frameCount * 1000 / delta);
+                    frameCount = 0;
+                    lastTime = time;
+                    infoDiv.innerHTML = `Renderer: WebGPU<br>FPS: ${fps}`;
+                }
+            }
+
+            async function animate(time) {
+                mesh.rotation.x = time / 2000;
+                mesh.rotation.y = time / 1000;
+                await renderer.renderAsync(scene, camera);
+                updateInfo(time);
+                requestAnimationFrame(animate);
+            }
+
+            // Initialize renderer without delay
+            async function initialize() {
+                try {
+                    console.log('Starting WebGPU renderer initialization...');
+                    await renderer.init();
+                    console.log('WebGPU renderer initialized successfully');
+                    renderer.setClearColor(0x000000, 1); // Ensure clear color is set after init
+                    lastTime = performance.now();
+                    console.log('Starting animation...');
+                    requestAnimationFrame(animate);
+                } catch (error) {
+                    console.error('Failed to initialize WebGPU renderer:', error);
+                    infoDiv.innerHTML = `Erreur WebGPU: ${error.message}`;
+                }
+            }
+
+            // Start initialization
+            initialize();
+        }
+    </script>
+</body>
+</html>
