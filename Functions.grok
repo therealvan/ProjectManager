@@ -11716,7 +11716,3 @@ src\Tools\StartHttpServer.js: installHttpServer
 src\Tools\StartHttpServer.js: isServerRunning
 src\Tools\StartHttpServer.js: getDefaultBrowserWin11
 src\Tools\StartHttpServer.js: startHttpServer
-UpdateProject.js: checkWebGL
-UpdateProject.js: checkWebGPU
-UpdateProject.js: checkSSL
-UpdateProject.js: checkThreeJS

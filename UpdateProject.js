@@ -1,17 +1,12 @@
 // UpdateProject.js
-// Pushes local code to GitHub using GitHub.js
 const fs = require('fs');
 const path = require('path');
-const { pushChanges } = require('./src/GitHub/GitHub.js');
 
-// Define project directory
-const PROJECT_DIR = __dirname;
+const githubPath = path.join(__dirname, 'src', 'GitHub', 'GitHub.js');
+const { pushChanges } = require(githubPath);
 
-// Log to project.log
-const logStream = fs.createWriteStream(path.join(PROJECT_DIR, 'project.log'), { flags: 'a' });
-console.log = (...args) => logStream.write(args.join(' ') + '\n');
+function updateProject() {
+    pushChanges();
+}
 
-// Perform the push
-console.log('Pushing local code to GitHub...');
-pushChanges();
-console.log('Push operation initiated.');
+updateProject();

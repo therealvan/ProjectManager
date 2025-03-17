@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,43 +16,31 @@
         <div id="info"></div>
     </div>
     <script type="module">
-        // Import Three.js
         import * as THREE from '/src/ExternalLib/three.js/build/three.module.js';
-
-        // Check WebGPU support (for informational purposes)
         const isWebGPUSupported = !!navigator.gpu;
         console.log('WebGPU support in browser:', isWebGPUSupported ? 'Yes' : 'No');
-
-        // Three.js demo with DirectX version and FPS
         const width = window.innerWidth, height = window.innerHeight;
         const camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
         camera.position.z = 1;
-
         const scene = new THREE.Scene();
         const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
         const material = new THREE.MeshNormalMaterial();
         const mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
-
-        // Use WebGLRenderer (WebGPU not yet standard in Three.js)
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         console.log('Renderer used: WebGL');
         renderer.setSize(width, height);
         renderer.setAnimationLoop(animate);
         const container = document.getElementById('three-container');
         container.appendChild(renderer.domElement);
-
-        // Info display
         const infoDiv = document.getElementById('info');
         let lastTime = 0, frameCount = 0, fps = 0;
-
         function getDirectXVersion() {
             const gl = renderer.getContext();
             const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
             const rendererStr = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unknown';
             return rendererStr.includes('Direct3D') ? 'DirectX 11' : 'N/A (WebGL)';
         }
-
         function updateInfo(time) {
             frameCount++;
             const delta = time - lastTime;
@@ -59,23 +48,20 @@
                 fps = Math.round(frameCount * 1000 / delta);
                 frameCount = 0;
                 lastTime = time;
-                infoDiv.innerHTML = `DirectX: ${getDirectXVersion()}<br>FPS: ${fps}`;
+                infoDiv.innerHTML = `DirectX: ${getDirectXVersion()}<br>FPS: ${fps}<br>test`;
+                console.log('Info updated with test (WebGL)');
             }
         }
-
         function animate(time) {
             mesh.rotation.x = time / 2000;
             mesh.rotation.y = time / 1000;
             renderer.render(scene, camera);
             updateInfo(time);
         }
-
-        // Initialize and force first render
         window.onload = () => {
             lastTime = performance.now();
             renderer.render(scene, camera);
         };
-
         requestAnimationFrame(animate);
     </script>
 </body>

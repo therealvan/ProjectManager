@@ -1,3 +1,4 @@
+
 const { execSync, spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -11,6 +12,43 @@ function logToFile(message) {
     const timestamp = new Date().toISOString();
     fs.appendFileSync(LOG_FILE, `[${timestamp}] ${message}\n`, 'utf8');
     console.log(message);
+}
+
+function killExistingServers() {
+    const ports = [80, 443, 8080]; // Ports HTTP/HTTPS typiques
+    logToFile('Tentative de suppression des serveurs existants sur les ports : ' + ports.join(', '));
+    try {
+        ports.forEach(port => {
+            logToFile(`Recherche des processus sur le port ${port}...`);
+            const netstatCmd = `netstat -aon | findstr :${port}`;
+            let result;
+            try {
+                result = execSync(netstatCmd, { stdio: 'pipe' }).toString();
+            } catch (e) {
+                logToFile(`Aucun processus trouvé sur le port ${port} ou erreur : ${e.message}`);
+                return;
+            }
+            const lines = result.trim().split('\n');
+            if (lines.length === 0 || lines[0] === '') {
+                logToFile(`Aucun processus actif détecté sur le port ${port}`);
+                return;
+            }
+            lines.forEach(line => {
+                const parts = line.trim().split(/s+/);
+                if (parts.length >= 5) {
+                    const pid = parts[4];
+                    try {
+                        execSync(`taskkill /PID ${pid} /F`, { stdio: 'ignore' });
+                        logToFile(`Processus (PID: ${pid}) sur le port ${port} terminé avec succès.`);
+                    } catch (e) {
+                        logToFile(`Échec de la terminaison du PID ${pid} sur le port ${port} : ${e.message}`);
+                    }
+                }
+            });
+        });
+    } catch (e) {
+        logToFile('Erreur générale lors de la suppression des serveurs : ' + e.message);
+    }
 }
 
 function isAdmin() {
@@ -39,6 +77,7 @@ exit`;
 }
 
 function launchProject() {
+    killExistingServers();
     elevatePrivileges();
     let startHttpServer;
     try {

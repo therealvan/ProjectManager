@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,88 +10,118 @@
         body { font-family: Arial, sans-serif; margin: 0; display: flex; }
         h1 { color: #333; }
         #dashboard { border: 1px solid #ccc; padding: 15px; border-radius: 5px; width: 300px; margin: 20px; }
-        .status { margin: 10px 0; }
+        .status { margin: 10px 0; display: flex; justify-content: space-between; }
         .active { color: green; }
         .inactive { color: red; }
         #three-container { flex-grow: 1; height: 100vh; }
         iframe { width: 100%; height: 100%; border: none; }
-        button { padding: 5px 10px; margin-top: 10px; cursor: pointer; }
+        button { padding: 5px 10px; cursor: pointer; display: block; width: 100%; margin: 5px 0; }
+        .status button { width: 48%; display: inline-block; }
     </style>
 </head>
 <body>
     <div id="dashboard">
         <h1>Dashboard</h1>
-        <div class="status" id="webgl-status">WebGL : Chargement...</div>
-        <div class="status" id="webgpu-status">WebGPU : Chargement...</div>
-        <div class="status" id="ssl-status">SSL : Chargement...</div>
-        <div class="status" id="threejs-status">Three.js : Chargement...</div>
+        <div class="status">
+            <button id="webgl-label">WebGL</button>
+            <button id="webgl-status">Chargement...</button>
+        </div>
+        <div class="status">
+            <button id="webgpu-label">WebGPU</button>
+            <button id="webgpu-status">Chargement...</button>
+        </div>
+        <div class="status">
+            <button id="ssl-label">SSL</button>
+            <button id="ssl-status">Chargement...</button>
+        </div>
+        <div class="status">
+            <button id="threejs-label">Three.js</button>
+            <button id="threejs-status">Chargement...</button>
+        </div>
         <button id="toggleRenderer">Passer à WebGPU</button>
+        <button onclick="window.open('src/Game/TestCube.html', '_blank')">Go to TestCube</button>
+        <button onclick="window.open('src/Game/TestCubeWebGPU.html', '_blank')">Go to TestCubeWebGPU</button>
     </div>
     <div id="three-container">
-        <iframe id="renderFrame" src="./src/Game/TestCube.html"></iframe>
+        <iframe id="renderFrame" src="/src/Game/TestCube.html"></iframe>
     </div>
     <script type="module">
-        // Import Three.js
         import * as THREE from '/src/ExternalLib/three.js/build/three.module.js';
-
-        // Dashboard checks
-        function checkWebGL() {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            const status = gl ? 'Actif (WebGL 1.0)' : 'Inactif';
-            document.getElementById('webgl-status').innerHTML = `WebGL : <span class="${gl ? 'active' : 'inactive'}">${status}</span>`;
-            return !!gl;
-        }
-
-        async function checkWebGPU() {
-            const isSupported = !!navigator.gpu;
-            let versionInfo = 'N/A';
-            if (isSupported) {
-                try {
-                    const adapter = await navigator.gpu.requestAdapter();
-                    const features = adapter.features;
-                    versionInfo = 'WebGPU (exp)';
-                    if (features.size > 0) versionInfo += ` [${features.size} features]`;
-                } catch (e) {
-                    versionInfo = 'WebGPU (erreur d’initialisation)';
-                }
+        setTimeout(() => {
+            const dashboard = document.getElementById('dashboard');
+            if (!dashboard.querySelector('button[onclick*="TestCube.html"]')) {
+                dashboard.innerHTML = `
+                    <h1>Dashboard</h1>
+                    <div class="status">
+                        <button id="webgl-label">WebGL</button>
+                        <button id="webgl-status">Chargement...</button>
+                    </div>
+                    <div class="status">
+                        <button id="webgpu-label">WebGPU</button>
+                        <button id="webgpu-status">Chargement...</button>
+                    </div>
+                    <div class="status">
+                        <button id="ssl-label">SSL</button>
+                        <button id="ssl-status">Chargement...</button>
+                    </div>
+                    <div class="status">
+                        <button id="threejs-label">Three.js</button>
+                        <button id="threejs-status">Chargement...</button>
+                    </div>
+                    <button id="toggleRenderer">Passer à WebGPU</button>
+                    <button onclick="window.open('src/Game/TestCube.html', '_blank')">Go to TestCube</button>
+                    <button onclick="window.open('src/Game/TestCubeWebGPU.html', '_blank')">Go to TestCubeWebGPU</button>
+                `;
+                console.log('Buttons re-added after Cloudflare interference');
             }
-            const status = isSupported ? `Actif (${versionInfo})` : 'Inactif';
-            document.getElementById('webgpu-status').innerHTML = `WebGPU : <span class="${isSupported ? 'active' : 'inactive'}">${status}</span>`;
-            return isSupported;
-        }
-
-        function checkSSL() {
-            const isSSL = window.location.protocol === 'https:';
-            document.getElementById('ssl-status').innerHTML = `SSL : <span class="${isSSL ? 'active' : 'inactive'}">${isSSL ? 'Actif' : 'Inactif'}</span>`;
-        }
-
-        function checkThreeJS() {
-            const isThreeLoaded = typeof THREE !== 'undefined' && THREE.WebGLRenderer;
-            const version = isThreeLoaded ? THREE.REVISION : 'N/A';
-            const status = isThreeLoaded ? `Actif (r${version})` : 'Inactif';
-            document.getElementById('threejs-status').innerHTML = `Three.js : <span class="${isThreeLoaded ? 'active' : 'inactive'}">${status}</span>`;
-        }
-
-        // Toggle between WebGL and WebGPU renderers
-        const toggleButton = document.getElementById('toggleRenderer');
-        const renderFrame = document.getElementById('renderFrame');
-        let isWebGPU = false;
-
-        toggleButton.addEventListener('click', () => {
-            isWebGPU = !isWebGPU;
-            renderFrame.src = isWebGPU ? './src/Game/TestCubeWebGPU.html' : './src/Game/TestCube.html';
-            toggleButton.textContent = isWebGPU ? 'Passer à WebGL' : 'Passer à WebGPU';
-        });
-
-        // Initialize dashboard
-        window.onload = async () => {
+            // Reattach toggle functionality
+            const toggleButton = document.getElementById('toggleRenderer');
+            const renderFrame = document.getElementById('renderFrame');
+            let isWebGPU = false;
+            toggleButton.addEventListener('click', () => {
+                isWebGPU = !isWebGPU;
+                renderFrame.src = isWebGPU ? '/src/Game/TestCubeWebGPU.html' : '/src/Game/TestCube.html';
+                toggleButton.textContent = isWebGPU ? 'Passer à WebGL' : 'Passer à WebGPU';
+            });
+            // Dynamic status updates
+            function checkWebGL() {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                const status = gl ? 'Actif (WebGL 1.0)' : 'Inactif';
+                document.getElementById('webgl-status').innerHTML = `<span class="${gl ? 'active' : 'inactive'}">${status}</span>`;
+            }
+            async function checkWebGPU() {
+                const isSupported = !!navigator.gpu;
+                let versionInfo = 'N/A';
+                if (isSupported) {
+                    try {
+                        const adapter = await navigator.gpu.requestAdapter();
+                        const features = adapter.features;
+                        versionInfo = 'WebGPU (exp)';
+                        if (features.size > 0) versionInfo += ` [${features.size} features]`;
+                    } catch (e) {
+                        versionInfo = 'WebGPU (erreur d’initialisation)';
+                    }
+                }
+                const status = isSupported ? `Actif (${versionInfo})` : 'Inactif';
+                document.getElementById('webgpu-status').innerHTML = `<span class="${isSupported ? 'active' : 'inactive'}">${status}</span>`;
+            }
+            function checkSSL() {
+                const isSSL = window.location.protocol === 'https:';
+                document.getElementById('ssl-status').innerHTML = `<span class="${isSSL ? 'active' : 'inactive'}">${isSSL ? 'Actif' : 'Inactif'}</span>`;
+            }
+            function checkThreeJS() {
+                const isThreeLoaded = typeof THREE !== 'undefined' && THREE.WebGLRenderer;
+                const version = isThreeLoaded ? THREE.REVISION : 'N/A';
+                const status = isThreeLoaded ? `Actif (r${version})` : 'Inactif';
+                document.getElementById('threejs-status').innerHTML = `<span class="${isThreeLoaded ? 'active' : 'inactive'}">${status}</span>`;
+            }
+            // Run status checks
             checkWebGL();
-            await checkWebGPU();
+            checkWebGPU();
             checkSSL();
             checkThreeJS();
-            console.log("Dashboard chargé avec succès.");
-        };
+        }, 500);
     </script>
 </body>
 </html>

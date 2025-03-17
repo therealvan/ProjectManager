@@ -10,8 +10,6 @@
 │   │   ├── WebGL.js
 │   │   └── WebGPU.js
 │   ├── ExternalLib/
-│   │   ├── three/
-│   │   │   └── three.module.js
 │   │   └── three.js/
 │   │       ├── build/
 │   │       │   ├── three.cjs
