@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,15 +7,14 @@
     <style>
         body { margin: 0; }
         #three-container { width: 100%; height: 100vh; position: relative; }
-        #info { position: absolute; top: 10px; left: 10px; color: white; background: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 3px; }
     </style>
 </head>
 <body>
-    <div id="three-container">
-        <div id="info"></div>
-    </div>
+    <div id="three-container"></div>
     <script type="module">
         import * as THREE from '/src/ExternalLib/three.js/build/three.module.js';
+        import { setupHud } from '/src/Game/Hud/HudPerfTopRight.js';
+        import { setupHudTopLeft } from '/src/Game/Hud/HudPerfTopLeft.js';
         const isWebGPUSupported = !!navigator.gpu;
         console.log('WebGPU support in browser:', isWebGPUSupported ? 'Yes' : 'No');
         const width = window.innerWidth, height = window.innerHeight;
@@ -30,39 +28,23 @@
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         console.log('Renderer used: WebGL');
         renderer.setSize(width, height);
-        renderer.setAnimationLoop(animate);
         const container = document.getElementById('three-container');
         container.appendChild(renderer.domElement);
-        const infoDiv = document.getElementById('info');
-        let lastTime = 0, frameCount = 0, fps = 0;
-        function getDirectXVersion() {
-            const gl = renderer.getContext();
-            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-            const rendererStr = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unknown';
-            return rendererStr.includes('Direct3D') ? 'DirectX 11' : 'N/A (WebGL)';
-        }
-        function updateInfo(time) {
-            frameCount++;
-            const delta = time - lastTime;
-            if (delta >= 1000) {
-                fps = Math.round(frameCount * 1000 / delta);
-                frameCount = 0;
-                lastTime = time;
-                infoDiv.innerHTML = `DirectX: ${getDirectXVersion()}<br>FPS: ${fps}<br>test`;
-                console.log('Info updated with test (WebGL)');
-            }
-        }
+        const hud = setupHud(renderer, container, false);
+        const hudLeft = setupHudTopLeft(container, renderer);
         function animate(time) {
             mesh.rotation.x = time / 2000;
             mesh.rotation.y = time / 1000;
             renderer.render(scene, camera);
-            updateInfo(time);
+            hud.updateInfo(time);
+            hudLeft.updateInfo();
+            requestAnimationFrame(animate);
         }
         window.onload = () => {
-            lastTime = performance.now();
+            hud.setLastTime(performance.now());
             renderer.render(scene, camera);
+            requestAnimationFrame(animate);
         };
-        requestAnimationFrame(animate);
     </script>
 </body>
 </html>

@@ -4,6 +4,7 @@ Debug.js: runDebug
 Functions.js: listFunctionsInJsFiles
 Functions.js: scanDirectory
 LaunchProject.js: logToFile
+LaunchProject.js: killExistingServers
 LaunchProject.js: isAdmin
 LaunchProject.js: elevatePrivileges
 LaunchProject.js: launchProject
@@ -11716,3 +11717,4 @@ src\Tools\StartHttpServer.js: installHttpServer
 src\Tools\StartHttpServer.js: isServerRunning
 src\Tools\StartHttpServer.js: getDefaultBrowserWin11
 src\Tools\StartHttpServer.js: startHttpServer
+UpdateProject.js: updateProject

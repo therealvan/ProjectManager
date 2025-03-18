@@ -1,8 +1,9 @@
-
 const { execSync, spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const http = require('http');
+const { getSystemInfo } = require('./src/Tools/System/GetSystemInfo.js');
 
 const PROJECT_DIR = path.join(__dirname);
 const LOG_FILE = path.join(PROJECT_DIR, 'project.log');
@@ -12,6 +13,40 @@ function logToFile(message) {
     const timestamp = new Date().toISOString();
     fs.appendFileSync(LOG_FILE, `[${timestamp}] ${message}\n`, 'utf8');
     console.log(message);
+}
+
+// Check if a port is in use
+function isPortInUse(port) {
+    try {
+        const result = execSync(`netstat -aon | findstr :${port}`, { stdio: 'pipe' }).toString().trim();
+        return result.length > 0;
+    } catch {
+        return false;
+    }
+}
+
+// Launch system info server if port is free
+const SYSTEM_PORT = 3000;
+if (isPortInUse(SYSTEM_PORT)) {
+    logToFile(`Port ${SYSTEM_PORT} already in use, skipping system info server startup`);
+} else {
+    const server = http.createServer((req, res) => {
+        if (req.url === '/system-info' && req.method === 'GET') {
+            res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify(getSystemInfo()));
+        } else {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('Not Found');
+        }
+    });
+
+    server.on('error', (err) => {
+        logToFile(`System info server error: ${err.message}`);
+    });
+
+    server.listen(SYSTEM_PORT, () => {
+        logToFile(`System info server running on port ${SYSTEM_PORT}`);
+    });
 }
 
 function killExistingServers() {
@@ -89,11 +124,21 @@ function launchProject() {
 
     try {
         startHttpServer.startHttpServer();
+        logToFile('Lancement de StartHttpServer.js réussi');
     } catch (error) {
         logToFile(`Erreur lors du démarrage du serveur HTTPS : ${error.message}`);
         throw error;
     }
 }
 
+// Handle uncaught exceptions to prevent crashes
+process.on('uncaughtException', (err) => {
+    logToFile(`Erreur non capturée : ${err.message}`);
+    console.error(err.stack);
+});
+
 module.exports = { launchProject };
-if (require.main === module) launchProject();
+if (require.main === module) {
+    logToFile('Démarrage de LaunchProject.js...');
+    launchProject();
+}

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -74,16 +73,15 @@
                 `;
                 console.log('Buttons re-added after Cloudflare interference');
             }
-            // Reattach toggle functionality
             const toggleButton = document.getElementById('toggleRenderer');
             const renderFrame = document.getElementById('renderFrame');
             let isWebGPU = false;
             toggleButton.addEventListener('click', () => {
                 isWebGPU = !isWebGPU;
-                renderFrame.src = isWebGPU ? 'src/Game/TestCubeWebGPU.html' : 'src/Game/TestCube.html';
+                const timestamp = new Date().getTime(); // Add timestamp to bust cache
+                renderFrame.src = isWebGPU ? `src/Game/TestCubeWebGPU.html?t=${timestamp}` : `src/Game/TestCube.html?t=${timestamp}`;
                 toggleButton.textContent = isWebGPU ? 'Passer à WebGL' : 'Passer à WebGPU';
             });
-            // Dynamic status updates
             function checkWebGL() {
                 const canvas = document.createElement('canvas');
                 const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -116,7 +114,6 @@
                 const status = isThreeLoaded ? `Actif (r${version})` : 'Inactif';
                 document.getElementById('threejs-status').innerHTML = `<span class="${isThreeLoaded ? 'active' : 'inactive'}">${status}</span>`;
             }
-            // Run status checks
             checkWebGL();
             checkWebGPU();
             checkSSL();
