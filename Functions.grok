@@ -4,6 +4,7 @@ Debug.js: runDebug
 Functions.js: listFunctionsInJsFiles
 Functions.js: scanDirectory
 LaunchProject.js: logToFile
+LaunchProject.js: isPortInUse
 LaunchProject.js: killExistingServers
 LaunchProject.js: isAdmin
 LaunchProject.js: elevatePrivileges
@@ -11669,6 +11670,13 @@ src\ExternalLib\three.js\utils\docs\template\static\scripts\search.js: fetchAllD
 src\ExternalLib\three.js\utils\docs\template\static\scripts\search.js: buildSearchResult
 src\ExternalLib\three.js\utils\docs\template\static\scripts\search.js: getSearchResult
 src\ExternalLib\three.js\utils\docs\template\static\scripts\search.js: search
+src\Game\Hud\HudPerfTopLeft.js: setupHudTopLeft
+src\Game\Hud\HudPerfTopLeft.js: updateInfo
+src\Game\Hud\HudPerfTopRight.js: setupHud
+src\Game\Hud\HudPerfTopRight.js: fetchSystemRam
+src\Game\Hud\HudPerfTopRight.js: getDirectXVersion
+src\Game\Hud\HudPerfTopRight.js: getGameRam
+src\Game\Hud\HudPerfTopRight.js: updateInfo
 src\GitHub\DiagGitHub.js: log
 src\GitHub\GitHub.js: verifyGitSuccess
 src\GitHub\GitHub.js: getCurrentBranch
@@ -11717,4 +11725,6 @@ src\Tools\StartHttpServer.js: installHttpServer
 src\Tools\StartHttpServer.js: isServerRunning
 src\Tools\StartHttpServer.js: getDefaultBrowserWin11
 src\Tools\StartHttpServer.js: startHttpServer
-UpdateProject.js: updateProject
+src\Tools\System\GetSystemInfo.js: getSystemInfo
+UpdateProject.js: logToFile
+UpdateProject.js: pushLocalCode

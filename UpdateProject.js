@@ -1,25 +1,64 @@
-// UpdateProject.js - Push local code to GitHub using GitHub.js and DiagGitHub.js
+// UpdateProject.js - Script pour mettre à jour le projet et pousser les modifications vers GitHub
 const fs = require('fs');
 const path = require('path');
-const { pushChanges } = require('./src/GitHub/GitHub.js');
-const { log } = require('./src/GitHub/DiagGitHub.js');
+const { generateTree } = require('./ProjectTree.js'); // Pour régénérer Tree.grok
+const { writeCodeGrok } = require('./Code.js'); // Pour régénérer code.grok
+const { listFunctionsInJsFiles } = require('./Functions.js'); // Pour régénérer Functions.grok
+const { pushChanges } = require('./src/GitHub/GitHub.js'); // Pour pousser vers GitHub
+const { updateReadme } = require('./Readme.js'); // Pour mettre à jour README.md
 
-// Fonction pour pousser le code local
+const PROJECT_DIR = __dirname;
+const LOG_FILE = path.join(PROJECT_DIR, 'project.log');
+
+// Fonction pour écrire dans le fichier de log
+function logToFile(message) {
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(LOG_FILE, `[${timestamp}] ${message}\n`, 'utf8');
+    console.log(message);
+}
+
+// Fonction principale pour mettre à jour le projet
 function pushLocalCode() {
-    try {
-        // Vérifier si le répertoire est un dépôt Git
-        if (!fs.existsSync(path.join(__dirname, '.git'))) {
-            log('Erreur : Le répertoire actuel n’est pas un dépôt Git.');
-            return;
-        }
+    logToFile('Démarrage de la mise à jour du projet...');
 
-        // Pousser les changements vers GitHub
+    try {
+        // Étape 1 : Régénérer Tree.grok
+        logToFile('Génération de Tree.grok...');
+        generateTree('Tree.grok')
+            .then(() => logToFile('Tree.grok régénéré avec succès.'))
+            .catch(err => logToFile(`Erreur lors de la génération de Tree.grok : ${err.message}`));
+
+        // Étape 2 : Régénérer code.grok
+        logToFile('Génération de code.grok...');
+        writeCodeGrok();
+        logToFile('code.grok régénéré avec succès.');
+
+        // Étape 3 : Régénérer Functions.grok
+        logToFile('Génération de Functions.grok...');
+        listFunctionsInJsFiles();
+        logToFile('Functions.grok régénéré avec succès.');
+
+        // Étape 4 : Mettre à jour README.md
+        logToFile('Mise à jour de README.md...');
+        updateReadme();
+        logToFile('README.md mis à jour avec succès.');
+
+        // Étape 5 : Pousser les changements vers GitHub
+        logToFile('Poussée des changements locaux vers GitHub...');
         pushChanges();
-        console.log('Code local poussé vers GitHub avec succès.');
+        logToFile('Changements poussés avec succès vers GitHub.');
+
+        logToFile('Mise à jour du projet terminée avec succès.');
     } catch (error) {
-        log(`Erreur lors de la poussée du code vers GitHub : ${error.message}`);
+        logToFile(`Erreur lors de la mise à jour du projet : ${error.message}`);
+        console.error(error.stack);
     }
 }
 
-// Exécuter la fonction
-pushLocalCode();
+// Exporter la fonction pour un usage externe
+module.exports = { pushLocalCode };
+
+// Exécuter directement si appelé comme script principal
+if (require.main === module) {
+    pushLocalCode();
+}

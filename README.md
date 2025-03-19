@@ -26,6 +26,16 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 │   │   └── WebGPU.js
 │   ├── ExternalLib/
 │   │   └── three.js/
+│   │       ├── addons/
+│   │       │   ├── postprocessing/
+│   │       │   │   ├── EffectComposer.js
+│   │       │   │   ├── RenderPass.js
+│   │       │   │   ├── ShaderPass.js
+│   │       │   │   ├── SMAAPass.js
+│   │       │   │   ├── SSAARenderPass.js
+│   │       │   │   └── TAARenderPass.js
+│   │       │   └── shaders/
+│   │       │       └── FXAAShader.js
 │   │       ├── build/
 │   │       │   ├── three.cjs
 │   │       │   ├── three.core.js
@@ -5898,12 +5908,21 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 │   │       ├── README.md
 │   │       └── SECURITY.md
 │   ├── Game/
+│   │   ├── Hud/
+│   │   │   ├── HudPerfTopLeft.js
+│   │   │   └── HudPerfTopRight.js
+│   │   ├── Dashboard.html
+│   │   ├── TARGET_FILE
 │   │   ├── TestCube.html
 │   │   └── TestCubeWebGPU.html
 │   ├── GitHub/
 │   │   ├── DiagGitHub.js
 │   │   └── GitHub.js
+│   ├── Graphics/
+│   │   └── Antialiasing.js
 │   └── Tools/
+│       ├── System/
+│       │   └── GetSystemInfo.js
 │       ├── DiagHttpServer.js
 │       ├── HttpServer.js
 │       ├── Privileges.js
@@ -5941,7 +5960,7 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 3. Submit a pull request
 
 ## Last Update
-3/18/2025, 10:12:10 PM
+3/19/2025, 1:54:04 PM
 
 ## License
 No license specified at this time.
