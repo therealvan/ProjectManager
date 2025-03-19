@@ -11672,6 +11672,7 @@ src\ExternalLib\three.js\utils\docs\template\static\scripts\search.js: getSearch
 src\ExternalLib\three.js\utils\docs\template\static\scripts\search.js: search
 src\Game\Hud\HudPerfTopLeft.js: setupHudTopLeft
 src\Game\Hud\HudPerfTopLeft.js: updateInfo
+src\Game\Hud\HudPerfTopLeft.js: updateStatus
 src\Game\Hud\HudPerfTopRight.js: setupHud
 src\Game\Hud\HudPerfTopRight.js: fetchSystemRam
 src\Game\Hud\HudPerfTopRight.js: getDirectXVersion
@@ -11727,4 +11728,9 @@ src\Tools\StartHttpServer.js: getDefaultBrowserWin11
 src\Tools\StartHttpServer.js: startHttpServer
 src\Tools\System\GetSystemInfo.js: getSystemInfo
 UpdateProject.js: logToFile
-UpdateProject.js: pushLocalCode
+UpdateProject.js: ensureDirectories
+UpdateProject.js: updateHudPerfTopLeftFile
+UpdateProject.js: setupHudTopLeft
+UpdateProject.js: updateInfo
+UpdateProject.js: updateStatus
+UpdateProject.js: updateLocalProject

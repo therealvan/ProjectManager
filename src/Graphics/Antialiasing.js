@@ -25,7 +25,6 @@ export class Antialiasing {
         this.height = height;
         this.composer = null;
 
-        // Liste des modes d'antialiasing disponibles
         this.modes = [
             { name: 'Off', type: 'none' },
             { name: 'MSAA x2', type: 'msaa', level: 2 },
@@ -38,38 +37,32 @@ export class Antialiasing {
             { name: 'TAA x2', type: 'taa', level: 2 },
             { name: 'TAA x4', type: 'taa', level: 4 }
         ];
-        this.currentModeIndex = 2; // Démarre avec MSAA x4 par défaut
+        this.currentModeIndex = 0;
         this.applySettings();
     }
 
-    // Appliquer les paramètres d'antialiasing
     applySettings() {
         const mode = this.modes[this.currentModeIndex];
-        
-        // Réinitialiser le composer
         if (this.composer) {
             this.composer.passes = [];
             this.composer = null;
         }
-
         if (mode.type === 'none') {
             if (this.renderer instanceof THREE.WebGLRenderer) {
-                this.renderer.antialias = false; // Note: nécessite recréation
+                this.renderer.antialias = false;
             } else {
                 this.renderer.sampleCount = 1;
             }
         } else if (mode.type === 'msaa') {
             if (this.renderer instanceof THREE.WebGLRenderer) {
-                this.renderer.antialias = true; // Note: nécessite recréation
+                this.renderer.antialias = true;
             } else {
-                this.renderer.sampleCount = mode.level; // WebGPU ajuste dynamiquement
+                this.renderer.sampleCount = mode.level;
             }
         } else {
-            // Post-processing avec EffectComposer
             this.composer = new EffectComposer(this.renderer);
             const renderPass = new RenderPass(this.scene, this.camera);
             this.composer.addPass(renderPass);
-
             switch (mode.type) {
                 case 'fxaa':
                     const fxaaPass = new ShaderPass(FXAAShader);
@@ -82,31 +75,30 @@ export class Antialiasing {
                     break;
                 case 'ssaa':
                     const ssaaPass = new SSAARenderPass(this.scene, this.camera, 0x000000, 0);
-                    ssaaPass.sampleLevel = mode.level === 2 ? 1 : 2; // x2 = level 1, x4 = level 2
+                    ssaaPass.sampleLevel = mode.level === 2 ? 1 : 2;
                     this.composer.addPass(ssaaPass);
                     break;
                 case 'taa':
                     const taaPass = new TAARenderPass(this.scene, this.camera, 0x000000, 0);
-                    taaPass.sampleLevel = mode.level === 2 ? 1 : 2; // x2 = level 1, x4 = level 2
+                    taaPass.sampleLevel = mode.level === 2 ? 1 : 2;
                     this.composer.addPass(taaPass);
                     break;
             }
         }
+        console.log(`Antialiasing appliqué : ${mode.name}`);
     }
 
-    // Passer au mode suivant
     nextMode() {
         this.currentModeIndex = (this.currentModeIndex + 1) % this.modes.length;
         this.applySettings();
+        console.log(`Antialiasing passe au mode : ${this.getStatus()}`);
         return this.getStatus();
     }
 
-    // Obtenir l'état actuel
     getStatus() {
         return this.modes[this.currentModeIndex].name;
     }
 
-    // Rendre avec le composer si actif
     render() {
         if (this.composer) {
             this.composer.render();

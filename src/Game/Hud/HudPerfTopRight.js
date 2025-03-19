@@ -1,4 +1,6 @@
 // HudPerfTopRight.js - Performance HUD with CPU, system RAM, and used game RAM
+import * as THREE from '/src/ExternalLib/three.js/build/three.module.js';
+
 export function setupHud(renderer, container, isWebGPU) {
     const infoDiv = document.createElement('div');
     infoDiv.id = 'info';
@@ -9,9 +11,9 @@ export function setupHud(renderer, container, isWebGPU) {
     infoDiv.style.background = 'rgba(0, 0, 0, 0.7)';
     infoDiv.style.padding = '5px';
     infoDiv.style.borderRadius = '3px';
+    infoDiv.style.zIndex = '1000';
     container.appendChild(infoDiv);
 
-    // Add CSS for RAM, CPU, and FPS usage colors
     const style = document.createElement('style');
     style.textContent = `
         .ram-green { color: #00FF00; }
@@ -27,24 +29,22 @@ export function setupHud(renderer, container, isWebGPU) {
     document.head.appendChild(style);
 
     let lastTime = 0, frameCount = 0, fps = 0, cpuUsage = 0, systemRam = 'N/A';
-    let lastRamFetchTime = 0, ramFetchInterval = 5000; // Fetch RAM every 5 seconds
+    let lastRamFetchTime = 0, ramFetchInterval = 5000;
 
-    // Create a Web Worker for CPU usage estimation
     const worker = new Worker(URL.createObjectURL(new Blob([`onmessage = function() {
         const start = performance.now();
         let i = 0;
-        while (i < 1e7) i++; // Simulate some CPU work
+        while (i < 1e7) i++;
         const end = performance.now();
         const duration = end - start;
-        const cpuLoad = Math.min(100, Math.round((duration / 10) * 100)); // Rough scaling
+        const cpuLoad = Math.min(100, Math.round((duration / 10) * 100));
         postMessage(cpuLoad);
     };`], { type: 'application/javascript' })));
     
     worker.onmessage = (e) => {
-        cpuUsage = e.data; // Receive CPU usage from worker
+        cpuUsage = e.data;
     };
 
-    // Fetch system RAM from local server
     async function fetchSystemRam() {
         try {
             const response = await fetch('http://localhost:3000/system-info');
@@ -59,17 +59,14 @@ export function setupHud(renderer, container, isWebGPU) {
             systemRam = `<span class="${ramClass}">${data.ram.used}</span>/${data.ram.total} MB`;
         } catch (error) {
             console.error('Failed to fetch system RAM:', error);
-            // Keep last valid systemRam value
         }
     }
 
     function getDirectXVersion() {
         if (isWebGPU) {
             if (navigator.gpu && navigator.platform.includes('Win')) {
-                console.log('Detected WebGPU on Windows, assuming DirectX 12');
                 return 'DirectX 12';
             }
-            console.log('No DirectX detection for WebGPU, defaulting to N/A');
             return 'N/A (WebGPU)';
         } else {
             const gl = renderer.getContext();
@@ -81,10 +78,10 @@ export function setupHud(renderer, container, isWebGPU) {
 
     function getGameRam() {
         if ('memory' in performance) {
-            const used = (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(1); // Convert to MB
-            return `${used} MB`; // Only show used RAM
+            const used = (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(1);
+            return `${used} MB`;
         }
-        return 'N/A'; // Fallback if API is not supported
+        return 'N/A';
     }
 
     function updateInfo(time) {
@@ -95,9 +92,8 @@ export function setupHud(renderer, container, isWebGPU) {
             fps = Math.round(frameCount * 1000 / delta);
             frameCount = 0;
             lastTime = time;
-            worker.postMessage(''); // Trigger CPU usage calculation
+            worker.postMessage('');
 
-            // Fetch system RAM only every 5 seconds
             if (time - lastRamFetchTime >= ramFetchInterval) {
                 fetchSystemRam();
                 lastRamFetchTime = time;
@@ -118,11 +114,9 @@ export function setupHud(renderer, container, isWebGPU) {
             const coloredFps = `<span class="${fpsClass}">${fps}</span>`;
 
             infoDiv.innerHTML = `DirectX: ${version}<br>FPS: ${coloredFps}<br>CPU: ${coloredCpu}%<br>Ram: ${systemRam}<br>Game Ram: ${gameRam}`;
-            console.log(`Info updated (FPS: ${fps}, CPU: ${cpuUsage}%, System Ram: ${systemRam}, Game Ram: ${gameRam}, ${isWebGPU ? 'WebGPU' : 'WebGL'})`);
         }
     }
 
-    // Initial fetch of system RAM
     fetchSystemRam();
 
     return { updateInfo, setLastTime: (time) => { lastTime = time; } };

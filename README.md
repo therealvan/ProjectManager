@@ -5919,7 +5919,16 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 │   │   ├── DiagGitHub.js
 │   │   └── GitHub.js
 │   ├── Graphics/
-│   │   └── Antialiasing.js
+│   │   ├── AnisotropicFiltering.js
+│   │   ├── Antialiasing.js
+│   │   ├── EnvironmentMapping.js
+│   │   ├── FogEffects.js
+│   │   ├── HDR.js
+│   │   ├── Mipmapping.js
+│   │   ├── PostProcessing.js
+│   │   ├── ShadowMapping.js
+│   │   ├── TextureCompression.js
+│   │   └── ToneMapping.js
 │   └── Tools/
 │       ├── System/
 │       │   └── GetSystemInfo.js
@@ -5960,7 +5969,7 @@ It allows initializing, updating, and managing a GitHub by only speaking to Grok
 3. Submit a pull request
 
 ## Last Update
-3/19/2025, 1:54:04 PM
+3/19/2025, 4:58:15 PM
 
 ## License
 No license specified at this time.
