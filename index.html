@@ -23,10 +23,6 @@
     <div id="dashboard">
         <h1>Dashboard</h1>
         <div class="status">
-            <button id="webgl-label">WebGL</button>
-            <button id="webgl-status">Chargement...</button>
-        </div>
-        <div class="status">
             <button id="webgpu-label">WebGPU</button>
             <button id="webgpu-status">Chargement...</button>
         </div>
@@ -41,6 +37,7 @@
         <button id="toggleRenderer">Passer à WebGPU</button>
         <button onclick="window.open('src/Game/TestCube.html', '_blank')">Go to TestCube</button>
         <button onclick="window.open('src/Game/TestCubeWebGPU.html', '_blank')">Go to TestCubeWebGPU</button>
+        <button onclick="window.open('src/Game/SimcityTest.html', '_blank')">Go to SimcityTest.html</button>
     </div>
     <div id="three-container">
         <iframe id="renderFrame" src="/src/Game/TestCube.html"></iframe>
@@ -71,19 +68,19 @@
                     <button id="toggleRenderer">Passer à WebGPU</button>
                     <button onclick="window.open('src/Game/TestCube.html', '_blank')">Go to TestCube</button>
                     <button onclick="window.open('src/Game/TestCubeWebGPU.html', '_blank')">Go to TestCubeWebGPU</button>
+                    <button onclick="window.open('src/Game/SimcityTest.html', '_blank')">Go to Simcity</button>
                 `;
                 console.log('Buttons re-added after Cloudflare interference');
             }
-            // Reattach toggle functionality
             const toggleButton = document.getElementById('toggleRenderer');
             const renderFrame = document.getElementById('renderFrame');
             let isWebGPU = false;
             toggleButton.addEventListener('click', () => {
                 isWebGPU = !isWebGPU;
-                renderFrame.src = isWebGPU ? 'src/Game/TestCubeWebGPU.html' : 'src/Game/TestCube.html';
+                const timestamp = new Date().getTime(); // Add timestamp to bust cache
+                renderFrame.src = isWebGPU ? `src/Game/TestCubeWebGPU.html?t=${timestamp}` : `src/Game/TestCube.html?t=${timestamp}`;
                 toggleButton.textContent = isWebGPU ? 'Passer à WebGL' : 'Passer à WebGPU';
             });
-            // Dynamic status updates
             function checkWebGL() {
                 const canvas = document.createElement('canvas');
                 const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -116,12 +113,12 @@
                 const status = isThreeLoaded ? `Actif (r${version})` : 'Inactif';
                 document.getElementById('threejs-status').innerHTML = `<span class="${isThreeLoaded ? 'active' : 'inactive'}">${status}</span>`;
             }
-            // Run status checks
             checkWebGL();
             checkWebGPU();
             checkSSL();
             checkThreeJS();
         }, 500);
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9236bec42e1b4252',t:'MTc0MjQ4OTgxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+    
