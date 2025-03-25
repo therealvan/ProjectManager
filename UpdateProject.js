@@ -1,7 +1,11 @@
 // UpdateProject.js
-const path = require('path');
-const { pushChanges } = require(path.join(__dirname, 'src', 'GitHub', 'GitHub.js'));
+const { addFiles, commitChanges, pushChanges } = require('./src/GitHub/GitHub.js');
+const fs = require('fs');
 
-// Push local changes to V1.2.0 branch
+// Add all local files, commit, and push to the repository
+addFiles('.');
+commitChanges('Update from local to remote');
 pushChanges();
-console.log('Pushed local changes to branch V1.2.0');
+
+// Log actions to project.log
+fs.appendFileSync('project.log', 'Pushed local changes to remote at ' + new Date().toISOString() + '\n');

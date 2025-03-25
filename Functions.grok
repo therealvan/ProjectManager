@@ -11727,3 +11727,10 @@ src\Tools\StartHttpServer.js: isServerRunning
 src\Tools\StartHttpServer.js: getDefaultBrowserWin11
 src\Tools\StartHttpServer.js: startHttpServer
 src\Tools\System\GetSystemInfo.js: getSystemInfo
+UpdateProject.js: logToFile
+UpdateProject.js: ensureDirectories
+UpdateProject.js: updateHudPerfTopLeftFile
+UpdateProject.js: setupHudTopLeft
+UpdateProject.js: updateInfo
+UpdateProject.js: updateStatus
+UpdateProject.js: updateLocalProject

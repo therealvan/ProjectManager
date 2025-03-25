@@ -5896,8 +5896,7 @@
 │   │   ├── Hud/
 │   │   │   ├── HudPerfTopLeft.js
 │   │   │   └── HudPerfTopRight.js
-│   │   ├── SimCity/
-│   │   │   └── SimcityTest.html
+│   │   ├── Dashboard.html
 │   │   ├── TARGET_FILE
 │   │   ├── TestCube.html
 │   │   └── TestCubeWebGPU.html
