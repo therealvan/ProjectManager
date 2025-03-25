@@ -1,11 +1,15 @@
-// UpdateProject.js
 const { addFiles, commitChanges, pushChanges } = require('./src/GitHub/GitHub.js');
-const fs = require('fs');
 
-// Add all local files, commit, and push to the repository
-addFiles('.');
-commitChanges('Update from local to remote');
-pushChanges();
+function updateProject() {
+    // Add all local files to staging
+    addFiles('.');
 
-// Log actions to project.log
-fs.appendFileSync('project.log', 'Pushed local changes to remote at ' + new Date().toISOString() + '\n');
+    // Commit changes with a message
+    commitChanges('Mise à jour locale vers le dépôt GitHub');
+
+    // Push changes to the remote repository
+    pushChanges();
+}
+
+updateProject();
+module.exports = { updateProject };
