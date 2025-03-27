@@ -6,14 +6,12 @@ function setupCameraControls(camera) {
 
     function updateCamera() {
         const direction = new THREE.Vector3();
-        // Get the camera's forward direction in the XZ plane (horizontal)
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-        forward.y = 0; // Keep movement in the XZ plane
+        forward.y = 0;
         forward.normalize();
 
-        // Get the camera's right direction in the XZ plane
         const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-        right.y = 0; // Keep movement in the XZ plane
+        right.y = 0;
         right.normalize();
 
         if (keys.z) direction.add(forward);

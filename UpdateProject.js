@@ -1,4 +1,13 @@
-const { pushChanges } = require('./src/GitHub/GitHub.js');
+// UpdateProject.js
+const { addFiles, commitChanges, pushChanges } = require('./src/GitHub/GitHub.js');
 
-// Push local changes to GitHub
+// Add all files to staging
+addFiles('.');
+
+// Commit the changes
+commitChanges('Push local repo to GitHub');
+
+// Push to GitHub
 pushChanges();
+
+console.log('Local repository pushed to GitHub successfully');
