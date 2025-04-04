@@ -18,6 +18,10 @@ function commit(message = 'Update') {
         console.log('Committed with message: "' + message + '"');
         return true;
     } catch (error) {
+        if (error.message.includes('nothing to commit')) {
+            console.log('Nothing to commit, working tree clean');
+            return false; // Pas d'erreur, juste rien à committer
+        }
         console.error('Error committing:', error.message);
         throw error;
     }
