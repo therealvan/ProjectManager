@@ -2,6 +2,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const { PROJECT_DIR } = require('./GitHub.js');
+const { logMessage } = require('./GitLog.js');
 
 function getCurrentBranch() {
     try {
@@ -9,10 +10,10 @@ function getCurrentBranch() {
             encoding: 'utf8', 
             cwd: PROJECT_DIR 
         }).trim();
-        console.log('Current branch: ' + branch);
+        logMessage('Current branch: ' + branch, 'info');
         return branch;
     } catch (error) {
-        console.error('Error getting current branch:', error.message);
+        logMessage('Error getting current branch: ' + error.message, 'error');
         throw error;
     }
 }
@@ -21,33 +22,49 @@ function saveCurrentBranch() {
     try {
         const branch = getCurrentBranch();
         fs.writeFileSync(path.join(PROJECT_DIR, 'Branche.git'), branch);
-        console.log('Active branch (' + branch + ') written to Branche.git');
+        logMessage('Active branch (' + branch + ') written to Branche.git', 'success');
         return branch;
     } catch (error) {
-        console.error('Error saving branch:', error.message);
+        logMessage('Error saving branch: ' + error.message, 'error');
         throw error;
     }
 }
 
 function createBranch(branchName) {
     try {
+        try {
+            execSync('git rev-parse HEAD', { stdio: 'pipe', cwd: PROJECT_DIR });
+        } catch (error) {
+            logMessage('No commits found, creating initial commit...', 'warning');
+            fs.writeFileSync(path.join(PROJECT_DIR, 'README.md'), '# Initial commit');
+            execSync('git add .', { stdio: 'inherit', cwd: PROJECT_DIR });
+            execSync('git commit -m "Initial commit"', { stdio: 'inherit', cwd: PROJECT_DIR });
+        }
+
         execSync('git branch ' + branchName, { stdio: 'inherit', cwd: PROJECT_DIR });
-        console.log('Branch ' + branchName + ' created');
+        logMessage('Branch ' + branchName + ' created', 'success');
         return true;
     } catch (error) {
-        console.error('Error creating branch ' + branchName + ':', error.message);
-        throw error;
+        logMessage('Branch ' + branchName + ' may already exist or error ignored', 'warning');
+        return false;
     }
 }
 
 function switchBranch(branchName) {
     try {
-        execSync('git checkout ' + branchName, { stdio: 'inherit', cwd: PROJECT_DIR });
-        console.log('Switched to branch ' + branchName);
+        try {
+            execSync('git checkout ' + branchName, { stdio: 'inherit', cwd: PROJECT_DIR });
+            logMessage('Switched to branch ' + branchName, 'success');
+        } catch (error) {
+            logMessage('Branch ' + branchName + ' does not exist, creating it...', 'warning');
+            createBranch(branchName);
+            execSync('git checkout ' + branchName, { stdio: 'inherit', cwd: PROJECT_DIR });
+            logMessage('Switched to newly created branch ' + branchName, 'success');
+        }
         saveCurrentBranch();
         return true;
     } catch (error) {
-        console.error('Error switching to branch ' + branchName + ':', error.message);
+        logMessage('Error switching to branch ' + branchName + ': ' + error.message, 'error');
         throw error;
     }
 }

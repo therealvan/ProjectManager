@@ -1,38 +1,50 @@
-const { switchBranch } = require('./GitBranch.js');
-const { addFiles, commit } = require('./GitCommit.js');
-const { push } = require('./GitPush.js');
+const { initDependencies } = require('./GitInit.js');
 
 function startProject() {
-    console.log('Starting StartProject.js...');
-    console.log('-------------');
+    // Initialiser les dépendances en premier
+    try {
+        initDependencies();
+    } catch (error) {
+        console.error('Failed to initialize dependencies:', error.message);
+        return;
+    }
+
+    // Importer les modules après l'initialisation
+    const { switchBranch } = require('./GitBranch.js');
+    const { addFiles, commit } = require('./GitCommit.js');
+    const { push } = require('./GitPush.js');
+    const { logMessage, logProgress } = require('./GitLog.js');
+
+    const progressBar = logProgress('Pushing code to V1.0.0', 4); // 4 étapes
 
     try {
-        // Basculer sur V1.0.0 (créera la branche si nécessaire)
-        console.log('Switching to branch V1.0.0...');
+        logMessage('Starting StartProject.js...', 'info');
+        progressBar.tick();
+
+        // Basculer sur V1.0.0
+        logMessage('Switching to branch V1.0.0...', 'info');
         switchBranch('V1.0.0');
-        console.log('-------------');
+        progressBar.tick();
 
         // Ajouter tous les fichiers locaux
-        console.log('Adding all local files...');
+        logMessage('Adding all local files...', 'info');
         addFiles('.');
-        console.log('-------------');
+        progressBar.tick();
 
-        // Committer les changements (si applicable)
-        console.log('Committing changes...');
+        // Committer les changements
+        logMessage('Committing changes...', 'info');
         const committed = commit('Update from local to V1.0.0');
         if (!committed) {
-            console.log('No changes to commit, proceeding to push...');
+            logMessage('No changes to commit, proceeding to push...', 'warning');
         }
-        console.log('-------------');
+        progressBar.tick();
 
         // Pousser sur V1.0.0 avec force
-        console.log('Pushing to V1.0.0 with force...');
-        push('V1.0.0', true); // Force pour écraser le remote si nécessaire
-        console.log('-------------');
-
-        console.log('Push to V1.0.0 completed successfully!');
+        logMessage('Pushing to V1.0.0 with force...', 'info');
+        push('V1.0.0', true);
+        logMessage('Push to V1.0.0 completed successfully!', 'success');
     } catch (error) {
-        console.error('Error during push process:', error.message);
+        logMessage('Error during push process: ' + error.message, 'error');
     }
 }
 

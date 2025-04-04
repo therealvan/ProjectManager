@@ -1,13 +1,14 @@
 const { execSync } = require('child_process');
 const { PROJECT_DIR } = require('./GitHub.js');
+const { logMessage } = require('./GitLog.js');
 
 function addFiles(files = '.') {
     try {
         execSync('git add ' + files, { stdio: 'inherit', cwd: PROJECT_DIR });
-        console.log('Files added to staging: ' + files);
+        logMessage('Files added to staging: ' + files, 'success');
         return true;
     } catch (error) {
-        console.error('Error adding files:', error.message);
+        logMessage('Error adding files: ' + error.message, 'error');
         throw error;
     }
 }
@@ -15,14 +16,14 @@ function addFiles(files = '.') {
 function commit(message = 'Update') {
     try {
         execSync('git commit -m "' + message + '"', { stdio: 'inherit', cwd: PROJECT_DIR });
-        console.log('Committed with message: "' + message + '"');
+        logMessage('Committed with message: "' + message + '"', 'success');
         return true;
     } catch (error) {
         if (error.message.includes('nothing to commit')) {
-            console.log('Nothing to commit, working tree clean');
-            return false; // Pas d'erreur, juste rien à committer
+            logMessage('Nothing to commit, working tree clean', 'warning');
+            return false;
         }
-        console.error('Error committing:', error.message);
+        logMessage('Error committing: ' + error.message, 'error');
         throw error;
     }
 }
