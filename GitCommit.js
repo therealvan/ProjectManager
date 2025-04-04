@@ -21,7 +21,7 @@ function commit(message = 'Update') {
     } catch (error) {
         if (error.message.includes('nothing to commit')) {
             logMessage('Nothing to commit, working tree clean', 'warning');
-            return false;
+            return false; // Pas d'erreur, juste rien à committer
         }
         logMessage('Error committing: ' + error.message, 'error');
         throw error;
