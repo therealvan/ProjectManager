@@ -36,7 +36,6 @@ function startProject() {
             console.log('Commits already exist');
         } catch (error) {
             console.log('No commits found, creating initial commit...');
-            // Ajouter un fichier temporaire si le répertoire est vide
             const fs = require('fs');
             fs.writeFileSync('README.md', '# Initial commit');
             addFiles('.');
@@ -66,9 +65,9 @@ function startProject() {
         commit('Update from local to V1.0.0');
         console.log('-------------');
 
-        // Pousser sur la branche V1.0.0
-        console.log('Pushing to V1.0.0...');
-        push('V1.0.0');
+        // Pousser sur la branche V1.0.0 avec --force
+        console.log('Pushing to V1.0.0 with force...');
+        push('V1.0.0', true); // true active l'option --force
         console.log('-------------');
 
         console.log('Push to V1.0.0 completed successfully!');
